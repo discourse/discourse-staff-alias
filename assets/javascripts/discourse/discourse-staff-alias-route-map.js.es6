@@ -4,4 +4,4 @@ export default function() {
       this.route("show", { path: "/:id" });
     });
   });
-};
+}
