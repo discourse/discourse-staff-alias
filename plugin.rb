@@ -132,7 +132,6 @@ after_initialize do
     @topic_view.aliased_staff_posts_usernames[object.id]
   end
 
-
   class StaffAliasUserSerializer < BasicUserSerializer
     attributes :moderator
   end

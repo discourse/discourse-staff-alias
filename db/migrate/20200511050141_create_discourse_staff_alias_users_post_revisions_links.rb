@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateDiscourseStaffAliasUsersPostRevisionsLinks < ActiveRecord::Migration[6.0]
   def change
     create_table :discourse_staff_alias_users_post_revisions_links do |t|

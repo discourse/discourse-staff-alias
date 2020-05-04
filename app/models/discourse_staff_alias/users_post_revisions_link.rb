@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class DiscourseStaffAlias::UsersPostRevisionsLink < ActiveRecord::Base
   belongs_to :post_revision
   belongs_to :user

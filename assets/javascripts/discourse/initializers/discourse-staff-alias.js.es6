@@ -1,32 +1,29 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import Composer from "discourse/models/composer";
-import { i18n } from "discourse/lib/computed";
 
 function initialize(api) {
   const currentUser = api.getCurrentUser();
 
   if (currentUser && currentUser.staff) {
-    api
-      .modifySelectKit("composer-actions")
-      .appendContent((component, _content) => {
-        if (component.action === Composer.REPLY) {
-          return [
-            {
-              name: I18n.t(
-                "composer.composer_actions.toggle_reply_as_staff_alias.label"
-              ),
-              description: I18n.t(
-                "composer.composer_actions.toggle_reply_as_staff_alias.desc"
-              ),
-              icon: "user-secret",
-              id: "toggle_reply_as_staff_alias"
-            }
-          ];
-        } else {
-          [];
-        }
-      });
+    api.modifySelectKit("composer-actions").appendContent(component => {
+      if (component.action === Composer.REPLY) {
+        return [
+          {
+            name: I18n.t(
+              "composer.composer_actions.toggle_reply_as_staff_alias.label"
+            ),
+            description: I18n.t(
+              "composer.composer_actions.toggle_reply_as_staff_alias.desc"
+            ),
+            icon: "user-secret",
+            id: "toggle_reply_as_staff_alias"
+          }
+        ];
+      } else {
+        [];
+      }
+    });
 
     api.modifyClass("component:composer-actions", {
       toggleReplyAsStaffAliasSelected(options, model) {
