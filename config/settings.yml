@@ -1,0 +1,4 @@
+plugins:
+  discourse_staff_alias_enabled:
+    default: true
+    client: true
