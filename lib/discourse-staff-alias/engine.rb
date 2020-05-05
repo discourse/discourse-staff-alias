@@ -9,4 +9,8 @@ module DiscourseStaffAlias
       end
     end
   end
+
+  def self.enabled?
+    SiteSetting.discourse_staff_alias_enabled
+  end
 end

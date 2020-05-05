@@ -17,5 +17,45 @@ PLUGIN_NAME ||= 'DiscourseStaffAlias'
 load File.expand_path('lib/discourse-staff-alias/engine.rb', __dir__)
 
 after_initialize do
-  # https://github.com/discourse/discourse/blob/master/lib/plugin/instance.rb
+  User.class_eval do
+    has_one :user_alias, class_name: "DiscourseStaffAlias::UserAlias", foreign_key: :user_id
+    has_one :aliased_user_alias, class_name: "DiscourseStaffAlias::UserAlias", foreign_key: :alias_user_id
+    has_one :alias, through: :user_alias, source: :alias_user
+    has_one :aliased_as, through: :aliased_user_alias, source: :user
+  end
+
+  add_controller_callback(PostsController, :around_action) do |controller, action|
+    if ["create", "update"].include?(controller.action_name)
+      # some params check
+      # guardian check
+
+      # We don't want to do this in the controller so this will be moved in the future
+      unless controller.current_user.alias
+        User.transaction do
+          alias_user = User.create!(
+            email: SecureRandom.hex,
+            password: SecureRandom.hex,
+            username: SecureRandom.hex(10),
+            skip_email_validation: true,
+            moderator: true,
+            approved: true,
+            active: true,
+            manual_locked_trust_level: TrustLevel.levels[:leader],
+            trust_level: TrustLevel.levels[:leader]
+          )
+
+          DiscourseStaffAlias::UserAlias.create!(
+            user_id: controller.current_user.id,
+            alias_user_id: alias_user.id
+          )
+
+          controller.current_user.reload
+        end
+      end
+
+      controller.with_current_user(controller.current_user.alias) { action.call }
+    else
+      action.call
+    end
+  end
 end
