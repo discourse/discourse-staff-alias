@@ -50,7 +50,7 @@ after_initialize do
   add_controller_callback(PostsController, :around_action) do |controller, action|
     supported_actions = DiscourseStaffAlias::UsersPostLinks::ACTIONS
 
-    if controller.params[:as_staff_alias] && supported_actions.keys.include?(controller.action_name)
+    if controller.params[:as_staff_alias] == "true" && supported_actions.keys.include?(controller.action_name)
       existing_user = controller.current_user
       raise Discourse::InvalidAccess if !existing_user.staff?
 
