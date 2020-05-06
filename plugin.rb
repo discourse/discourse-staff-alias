@@ -6,54 +6,52 @@
 # authors: tgxworld
 # url: https://github.com/discourse/discourse-staff-alias
 
-register_asset 'stylesheets/common/discourse-staff-alias.scss'
-register_asset 'stylesheets/desktop/discourse-staff-alias.scss', :desktop
-register_asset 'stylesheets/mobile/discourse-staff-alias.scss', :mobile
-
 enabled_site_setting :discourse_staff_alias_enabled
 
 PLUGIN_NAME ||= 'DiscourseStaffAlias'
 
-load File.expand_path('lib/discourse-staff-alias/engine.rb', __dir__)
+[
+  'lib/discourse-staff-alias/engine.rb',
+  'lib/discourse-staff-alias/validators/username_validator.rb',
+  'lib/discourse-staff-alias/validators/enabled_validator.rb'
+].each do |path|
+  load File.expand_path(path, __dir__)
+end
 
 after_initialize do
-  User.class_eval do
-    has_one :user_alias, class_name: "DiscourseStaffAlias::UserAlias", foreign_key: :user_id
-    has_one :aliased_user_alias, class_name: "DiscourseStaffAlias::UserAlias", foreign_key: :alias_user_id
-    has_one :alias, through: :user_alias, source: :alias_user
-    has_one :aliased_as, through: :aliased_user_alias, source: :user
+  DiscourseEvent.on(:site_setting_changed) do |name, _old_value, new_value|
+    if name.to_s == 'discourse_staff_alias_username' && new_value.present?
+      DistributedMutex.synchronize("discourse_staff_alias") do
+        if alias_user = DiscourseStaffAlias.alias_user
+          UsernameChanger.change(
+            alias_user,
+            new_value,
+            Discourse.system_user
+          )
+        else
+          user = User.create!(
+            email: SecureRandom.hex,
+            password: SecureRandom.hex,
+            skip_email_validation: true,
+            username: new_value,
+            active: true,
+            trust_level: TrustLevel.levels[:leader],
+            manual_locked_trust_level: TrustLevel.levels[:leader],
+            moderator: true,
+            approved: true
+          )
+
+          SiteSetting.set(:discourse_staff_alias_user_id, user.id)
+        end
+      end
+    end
   end
 
   add_controller_callback(PostsController, :around_action) do |controller, action|
-    if ["create", "update"].include?(controller.action_name)
+    if DiscourseStaffAlias.enabled? && ["create", "update"].include?(controller.action_name)
       # some params check
       # guardian check
-
-      # We don't want to do this in the controller so this will be moved in the future
-      unless controller.current_user.alias
-        User.transaction do
-          alias_user = User.create!(
-            email: SecureRandom.hex,
-            password: SecureRandom.hex,
-            username: SecureRandom.hex(10),
-            skip_email_validation: true,
-            moderator: true,
-            approved: true,
-            active: true,
-            manual_locked_trust_level: TrustLevel.levels[:leader],
-            trust_level: TrustLevel.levels[:leader]
-          )
-
-          DiscourseStaffAlias::UserAlias.create!(
-            user_id: controller.current_user.id,
-            alias_user_id: alias_user.id
-          )
-
-          controller.current_user.reload
-        end
-      end
-
-      controller.with_current_user(controller.current_user.alias) { action.call }
+      controller.with_current_user(DiscourseStaffAlias.alias_user) { action.call }
     else
       action.call
     end

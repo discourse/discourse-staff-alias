@@ -13,4 +13,8 @@ module DiscourseStaffAlias
   def self.enabled?
     SiteSetting.discourse_staff_alias_enabled
   end
+
+  def self.alias_user
+    User.find_by(id: SiteSetting.discourse_staff_alias_user_id)
+  end
 end

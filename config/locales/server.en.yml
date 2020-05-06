@@ -1,3 +1,6 @@
 en:
   site_settings:
     discourse_staff_alias_enabled: "Enable discourse-staff-alias plugin"
+    discourse_staff_alias_username: "Username of the alias user"
+    errors:
+      staff_alias_username_not_set: "You cannot enable discourse-staff-alias unless you've configured 'discourse_staff_alias_username'."
