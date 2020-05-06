@@ -48,10 +48,32 @@ after_initialize do
   end
 
   add_controller_callback(PostsController, :around_action) do |controller, action|
-    if DiscourseStaffAlias.enabled? && ["create", "update"].include?(controller.action_name)
-      # some params check
-      # guardian check
-      controller.with_current_user(DiscourseStaffAlias.alias_user) { action.call }
+    supported_actions = DiscourseStaffAlias::UsersPostLinks::ACTIONS
+
+    if controller.params[:as_staff_alias] && supported_actions.keys.include?(controller.action_name)
+      existing_user = controller.current_user
+      raise Discourse::InvalidAccess if !existing_user.staff?
+
+      controller.with_current_user(DiscourseStaffAlias.alias_user) do
+        Post.transaction do
+          action.call
+
+          if controller.response.successful?
+            post_id =
+              if controller.action_name == 'create'
+                controller.view_assigns["new_post_id"]
+              else
+                controller.params["id"]
+              end
+
+            DiscourseStaffAlias::UsersPostLinks.create!(
+              user_id: existing_user.id,
+              post_id: post_id,
+              action: supported_actions[controller.action_name]
+            )
+          end
+        end
+      end
     else
       action.call
     end
