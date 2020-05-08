@@ -47,6 +47,25 @@ after_initialize do
     end
   end
 
+  add_permitted_post_create_param(:as_staff_alias)
+  add_permitted_post_create_param(:staff_user_id)
+
+  NewPostManager.add_handler do |manager|
+    next if !manager.args[:as_staff_alias]
+
+    result = manager.perform_create_post
+
+    if result.success?
+      DiscourseStaffAlias::UsersPostLinks.create!(
+        user_id: manager.args[:staff_user_id],
+        post_id: result.post.id,
+        action: DiscourseStaffAlias::UsersPostLinks::ACTIONS["create"]
+      )
+    end
+
+    result
+  end
+
   add_controller_callback(PostsController, :around_action) do |controller, action|
     supported_actions = DiscourseStaffAlias::UsersPostLinks::ACTIONS
     params = controller.params
@@ -55,22 +74,17 @@ after_initialize do
       existing_user = controller.current_user
       raise Discourse::InvalidAccess if !existing_user.staff? || params[:whisper]
 
+      controller.params[:staff_user_id] = existing_user.id
+
       controller.with_current_user(DiscourseStaffAlias.alias_user) do
         Post.transaction do
           action.call
 
-          if controller.response.successful?
-            post_id =
-              if controller.action_name == 'create'
-                controller.view_assigns["new_post_id"]
-              else
-                params["id"]
-              end
-
+          if controller.response.successful? && controller.action_name == 'update'
             DiscourseStaffAlias::UsersPostLinks.create!(
               user_id: existing_user.id,
-              post_id: post_id,
-              action: supported_actions[controller.action_name]
+              post_id: params["id"],
+              action: supported_actions['update']
             )
           end
         end
