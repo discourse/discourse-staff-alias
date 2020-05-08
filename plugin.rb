@@ -76,6 +76,24 @@ after_initialize do
     result
   end
 
+  topic_view_post_custom_fields_whitelister { [DiscourseStaffAlias::REPLIED_AS_ALIAS] }
+
+  add_to_class(:topic_view, :aliased_staff_posts) do
+    @aliased_staff_posts ||= begin
+      @post_custom_fields.each_with_object({}) do |field, object|
+        object[field[0]] = true if field[1][DiscourseStaffAlias::REPLIED_AS_ALIAS]
+      end
+    end
+  end
+
+  add_to_serializer(:post, :include_is_staff_alias?, false) do
+    scope.current_user.staff? && @topic_view.present?
+  end
+
+  add_to_serializer(:post, :is_staff_alias, false) do
+    @topic_view.aliased_staff_posts[object.id]
+  end
+
   add_controller_callback(PostsController, :around_action) do |controller, action|
     supported_actions = DiscourseStaffAlias::UsersPostLinks::ACTIONS
     params = controller.params

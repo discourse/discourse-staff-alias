@@ -42,9 +42,20 @@ function initialize(api) {
     api.modifyClass("model:composer", {
       replyAsStaffAlias: false,
 
-      @discourseComputed("replyAsStaffAlias", "whisper", "editingPost")
-      canReplyAsStaffAlias(replyAsStaffAlias, whisper, editingPost) {
+      @discourseComputed(
+        "replyAsStaffAlias",
+        "whisper",
+        "editingPost",
+        "post.is_staff_alias"
+      )
+      canReplyAsStaffAlias(
+        replyAsStaffAlias,
+        whisper,
+        editingPost,
+        isStaffAlias
+      ) {
         if (editingPost) {
+          return isStaffAlias;
         } else {
           return !whisper && replyAsStaffAlias;
         }
