@@ -31,14 +31,25 @@ function initialize(api) {
   api.modifyClass("component:composer-actions", {
     toggleReplyAsStaffAliasSelected(options, model) {
       model.toggleProperty("replyAsStaffAlias");
+      if (model.whisper) model.set("whisper", false);
+    },
+
+    toggleWhisperSelected(options, model) {
+      this._super(...arguments);
+      if (model.replyAsStaffAlias) model.set("replyAsStaffAlias", false);
     }
   });
 
   api.modifyClass("model:composer", {
-    replyAsStaffAlias: false
+    replyAsStaffAlias: false,
+
+    @discourseComputed("replyAsStaffAlias", "whisper")
+    canReplyAsStaffAlias(replyAsStaffAlias, whisper) {
+      return !whisper && replyAsStaffAlias;
+    }
   });
 
-  Composer.serializeOnCreate("as_staff_alias", "replyAsStaffAlias");
+  Composer.serializeOnCreate("as_staff_alias", "canReplyAsStaffAlias");
 }
 
 export default {
