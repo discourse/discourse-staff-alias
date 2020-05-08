@@ -53,7 +53,7 @@ after_initialize do
   register_post_custom_field_type(DiscourseStaffAlias::REPLIED_AS_ALIAS, :boolean)
 
   NewPostManager.add_handler do |manager|
-    next if !manager.args[:as_staff_alias]
+    next if !manager.args[:staff_user_id]
 
     manager.args[:custom_fields] ||= {}
 
@@ -67,7 +67,9 @@ after_initialize do
       DiscourseStaffAlias::UsersPostLinks.create!(
         user_id: manager.args[:staff_user_id],
         post_id: result.post.id,
-        action: DiscourseStaffAlias::UsersPostLinks::ACTIONS["create"]
+        action: DiscourseStaffAlias::UsersPostLinks::ACTIONS[
+          DiscourseStaffAlias::UsersPostLinks::CREATE_POST_ACTION
+        ]
       )
     end
 
@@ -77,22 +79,36 @@ after_initialize do
   add_controller_callback(PostsController, :around_action) do |controller, action|
     supported_actions = DiscourseStaffAlias::UsersPostLinks::ACTIONS
     params = controller.params
+    action_name = controller.action_name
 
-    if params[:as_staff_alias] == "true" && supported_actions.keys.include?(controller.action_name)
+    if params[:as_staff_alias] == "true" && supported_actions.keys.include?(action_name)
       existing_user = controller.current_user
       raise Discourse::InvalidAccess if !existing_user.staff? || params[:whisper]
 
-      controller.params[:staff_user_id] = existing_user.id
+      is_editing = action_name == DiscourseStaffAlias::UsersPostLinks::UPDATE_POST_ACTION
+
+      if is_editing
+        if !DiscourseStaffAlias::UsersPostLinks.exists?(
+          post_id: params["id"],
+          action: supported_actions[DiscourseStaffAlias::UsersPostLinks::CREATE_POST_ACTION]
+        )
+          raise Discourse::InvalidAccess
+        end
+      elsif action_name == DiscourseStaffAlias::UsersPostLinks::CREATE_POST_ACTION
+        controller.params[:staff_user_id] = existing_user.id
+      end
 
       controller.with_current_user(DiscourseStaffAlias.alias_user) do
         Post.transaction do
           action.call
 
-          if controller.response.successful? && controller.action_name == 'update'
+          if controller.response.successful? && is_editing
             DiscourseStaffAlias::UsersPostLinks.create!(
               user_id: existing_user.id,
               post_id: params["id"],
-              action: supported_actions['update']
+              action: supported_actions[
+                DiscourseStaffAlias::UsersPostLinks::UPDATE_POST_ACTION
+              ]
             )
           end
         end
