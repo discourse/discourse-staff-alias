@@ -50,8 +50,16 @@ after_initialize do
   add_permitted_post_create_param(:as_staff_alias)
   add_permitted_post_create_param(:staff_user_id)
 
+  register_post_custom_field_type(DiscourseStaffAlias::REPLIED_AS_ALIAS, :boolean)
+
   NewPostManager.add_handler do |manager|
     next if !manager.args[:as_staff_alias]
+
+    manager.args[:custom_fields] ||= {}
+
+    manager.args[:custom_fields] = manager.args[:custom_fields].merge({
+      DiscourseStaffAlias::REPLIED_AS_ALIAS => true
+    })
 
     result = manager.perform_create_post
 

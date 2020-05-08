@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 describe PostsController do
@@ -58,6 +60,7 @@ describe PostsController do
 
       expect(post.raw).to eq('this is a post')
       expect(post.topic_id).to eq(post_1.topic_id)
+      expect(post.custom_fields[DiscourseStaffAlias::REPLIED_AS_ALIAS]).to eq(true)
 
       expect(DiscourseStaffAlias::UsersPostLinks.exists?(
         user_id: moderator.id,

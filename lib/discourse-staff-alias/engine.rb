@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DiscourseStaffAlias
   class Engine < ::Rails::Engine
     engine_name "DiscourseStaffAlias".freeze
@@ -9,6 +11,8 @@ module DiscourseStaffAlias
       end
     end
   end
+
+  REPLIED_AS_ALIAS = 'discourse_staff_alias_replied_as_alias'
 
   def self.enabled?
     SiteSetting.discourse_staff_alias_enabled
