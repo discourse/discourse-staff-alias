@@ -24,6 +24,23 @@ describe PostsController do
       expect(response.status).to eq(403)
     end
 
+    it 'does not allow a whisper to be posted as an alias user' do
+      sign_in(moderator)
+      alias_user = DiscourseStaffAlias.alias_user
+
+      expect do
+        post "/posts.json", params: {
+          raw: 'this is a post',
+          topic_id: post_1.topic_id,
+          reply_to_post_number: 1,
+          as_staff_alias: true,
+          whisper: "true"
+        }
+
+        expect(response.status).to eq(403)
+      end.to_not change { alias_user.posts.count }
+    end
+
     it 'allows a staff user to post as alias user' do
       sign_in(moderator)
       alias_user = DiscourseStaffAlias.alias_user
