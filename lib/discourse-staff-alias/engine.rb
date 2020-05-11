@@ -19,6 +19,6 @@ module DiscourseStaffAlias
   end
 
   def self.alias_user
-    User.find_by(id: SiteSetting.discourse_staff_alias_user_id)
+    @alias_user ||= User.find_by(id: SiteSetting.discourse_staff_alias_user_id)
   end
 end

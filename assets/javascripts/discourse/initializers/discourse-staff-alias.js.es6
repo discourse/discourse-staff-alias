@@ -1,5 +1,5 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
-import discourseComputed from "discourse-common/utils/decorators";
+import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import Composer from "discourse/models/composer";
 
 function initialize(api) {
@@ -42,13 +42,23 @@ function initialize(api) {
     api.modifyClass("model:composer", {
       replyAsStaffAlias: false,
 
+      @observes("isReplyAsStaffAlias")
+      _updateUser() {
+        if (this.isReplyAsStaffAlias) {
+          this._originalUser = this.user;
+          this.user = this.topic.staff_alias_user;
+        } else if (this._originalUser) {
+          this.user = this._originalUser;
+        }
+      },
+
       @discourseComputed(
         "replyAsStaffAlias",
         "whisper",
         "editingPost",
         "post.is_staff_alias"
       )
-      canReplyAsStaffAlias(
+      isReplyAsStaffAlias(
         replyAsStaffAlias,
         whisper,
         editingPost,
@@ -62,7 +72,7 @@ function initialize(api) {
       }
     });
 
-    Composer.serializeOnCreate("as_staff_alias", "canReplyAsStaffAlias");
+    Composer.serializeOnCreate("as_staff_alias", "isReplyAsStaffAlias");
   }
 }
 

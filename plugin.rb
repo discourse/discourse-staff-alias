@@ -89,6 +89,18 @@ after_initialize do
     @topic_view.aliased_staff_posts[object.id]
   end
 
+  class StaffAliasUserSerializer < BasicUserSerializer
+    attributes :moderator
+  end
+
+  add_to_serializer(:topic_view, :include_staff_alias_user?, false) do
+    scope.current_user.staff?
+  end
+
+  add_to_serializer(:topic_view, :staff_alias_user, false) do
+    StaffAliasUserSerializer.new(DiscourseStaffAlias.alias_user, root: false)
+  end
+
   add_controller_callback(PostsController, :around_action) do |controller, action|
     supported_actions = DiscourseStaffAlias::UsersPostLinks::ACTIONS
     params = controller.params
