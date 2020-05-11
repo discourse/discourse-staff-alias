@@ -5,7 +5,7 @@ import Composer from "discourse/models/composer";
 function initialize(api) {
   const currentUser = api.getCurrentUser();
 
-  if (currentUser.staff) {
+  if (currentUser && currentUser.staff) {
     api
       .modifySelectKit("composer-actions")
       .appendContent((component, _content) => {
