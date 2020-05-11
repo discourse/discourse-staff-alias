@@ -100,9 +100,7 @@ after_initialize do
       post_ids = []
 
       posts.each do |post|
-        if post.custom_fields[DiscourseStaffAlias::REPLIED_AS_ALIAS].present?
-          post_ids << post.id
-        end
+        post_ids << post.id if aliased_staff_posts[post.id]
       end
 
       return {} if post_ids.empty?
@@ -125,11 +123,18 @@ after_initialize do
   end
 
   add_to_serializer(:post, :include_staff_alias_username?, false) do
-    include_is_staff_alias? && is_staff_alias
+    (include_is_staff_alias? && is_staff_alias) ||
+      object.user_id == SiteSetting.get(:discourse_staff_alias_user_id)
   end
 
   add_to_serializer(:post, :staff_alias_username, false) do
-    @topic_view.aliased_staff_posts_usernames[object.id]
+    if @topic_view.present?
+      @topic_view.aliased_staff_posts_usernames[object.id]
+    else
+      User.joins("INNER JOIN discourse_staff_alias_users_posts_links ON discourse_staff_alias_users_posts_links.user_id = users.id")
+        .where("discourse_staff_alias_users_posts_links.post_id = ?", object.id)
+        .pluck(:username).first
+    end
   end
 
   class StaffAliasUserSerializer < BasicUserSerializer
