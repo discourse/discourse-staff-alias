@@ -52,28 +52,23 @@ after_initialize do
 
   register_post_custom_field_type(DiscourseStaffAlias::REPLIED_AS_ALIAS, :boolean)
 
-  NewPostManager.add_handler do |manager|
-    next if !manager.args[:staff_user_id]
+  on(:before_create_post) do |post, opts|
+    if opts["as_staff_alias"] == "true" && opts["staff_user_id"]
+      post.custom_fields ||= {}
+      post.custom_fields[DiscourseStaffAlias::REPLIED_AS_ALIAS] = true
+    end
+  end
 
-    manager.args[:custom_fields] ||= {}
-
-    manager.args[:custom_fields] = manager.args[:custom_fields].merge({
-      DiscourseStaffAlias::REPLIED_AS_ALIAS => true
-    })
-
-    result = manager.perform_create_post
-
-    if result.success?
+  on(:post_created) do |post, opts, _user|
+    if opts["as_staff_alias"] == "true" && opts["staff_user_id"]
       DiscourseStaffAlias::UsersPostLinks.create!(
-        user_id: manager.args[:staff_user_id],
-        post_id: result.post.id,
+        user_id: opts["staff_user_id"],
+        post_id: post.id,
         action: DiscourseStaffAlias::UsersPostLinks::ACTIONS[
           DiscourseStaffAlias::UsersPostLinks::CREATE_POST_ACTION
         ]
       )
     end
-
-    result
   end
 
   topic_view_post_custom_fields_whitelister { [DiscourseStaffAlias::REPLIED_AS_ALIAS] }
