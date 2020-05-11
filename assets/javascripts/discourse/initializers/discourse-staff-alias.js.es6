@@ -1,6 +1,7 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import Composer from "discourse/models/composer";
+import { i18n } from "discourse/lib/computed";
 
 function initialize(api) {
   const currentUser = api.getCurrentUser();
@@ -39,6 +40,13 @@ function initialize(api) {
       }
     });
 
+    api.modifyClass("model:post", {
+      beforeUpdate(props) {
+        props.as_staff_alias = true;
+        return this._super(props);
+      }
+    });
+
     api.modifyClass("model:composer", {
       replyAsStaffAlias: false,
 
@@ -69,6 +77,21 @@ function initialize(api) {
         } else {
           return !whisper && replyAsStaffAlias;
         }
+      }
+    });
+
+    api.includePostAttributes("staff_alias_username");
+
+    api.addPosterIcon((cfs, attrs) => {
+      if (attrs.staff_alias_username) {
+        return {
+          icon: "user-secret",
+          text: attrs.staff_alias_username,
+          title: I18n.t("discourse_staff_alias.poster_icon_title", {
+            username: attrs.staff_alias_username
+          }),
+          className: "user-title"
+        };
       }
     });
 

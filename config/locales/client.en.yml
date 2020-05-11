@@ -5,3 +5,5 @@ en:
         toggle_reply_as_staff_alias:
           label: "Toggle Reply As Staff Alias"
           desc: "Post will be created under an alias staff user"
+    discourse_staff_alias:
+      poster_icon_title: "Posted as staff alias by @%{username}"

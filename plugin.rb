@@ -18,6 +18,8 @@ PLUGIN_NAME ||= 'DiscourseStaffAlias'
   load File.expand_path(path, __dir__)
 end
 
+register_asset 'stylesheets/common/discourse-staff-alias.scss'
+
 after_initialize do
   DiscourseEvent.on(:site_setting_changed) do |name, _old_value, new_value|
     if name.to_s == 'discourse_staff_alias_username' && new_value.present?
@@ -47,26 +49,38 @@ after_initialize do
     end
   end
 
-  add_permitted_post_create_param(:as_staff_alias)
-  add_permitted_post_create_param(:staff_user_id)
-
   register_post_custom_field_type(DiscourseStaffAlias::REPLIED_AS_ALIAS, :boolean)
 
-  on(:before_create_post) do |post, opts|
-    if opts["as_staff_alias"] == "true" && opts["staff_user_id"]
+  reloadable_patch do
+    User.class_eval do
+      attr_accessor :aliased_staff_user_id
+    end
+  end
+
+  on(:before_create_post) do |post|
+    if post.user.aliased_staff_user_id
       post.custom_fields ||= {}
       post.custom_fields[DiscourseStaffAlias::REPLIED_AS_ALIAS] = true
     end
   end
 
-  on(:post_created) do |post, opts, _user|
-    if opts["as_staff_alias"] == "true" && opts["staff_user_id"]
-      DiscourseStaffAlias::UsersPostLinks.create!(
-        user_id: opts["staff_user_id"],
-        post_id: post.id,
-        action: DiscourseStaffAlias::UsersPostLinks::ACTIONS[
-          DiscourseStaffAlias::UsersPostLinks::CREATE_POST_ACTION
-        ]
+  on(:post_created) do |post, opts, user|
+    if user.aliased_staff_user_id
+      DiscourseStaffAlias::UsersPostsLink.create!(
+        user_id: user.aliased_staff_user_id,
+        post_id: post.id
+      )
+    end
+  end
+
+  on(:post_edited) do |post, revisor|
+    if post.custom_fields[DiscourseStaffAlias::REPLIED_AS_ALIAS] &&
+       revisor.editor.aliased_staff_user_id &&
+       revisor.post_revision
+
+      DiscourseStaffAlias::UsersPostRevisionsLink.create!(
+        user_id: revisor.editor.aliased_staff_user_id,
+        post_revision_id: revisor.post_revision.id
       )
     end
   end
@@ -81,6 +95,27 @@ after_initialize do
     end
   end
 
+  add_to_class(:topic_view, :aliased_staff_posts_usernames) do
+    @aliased_staff_posts_usernames ||= begin
+      post_ids = []
+
+      posts.each do |post|
+        if post.custom_fields[DiscourseStaffAlias::REPLIED_AS_ALIAS].present?
+          post_ids << post.id
+        end
+      end
+
+      return {} if post_ids.empty?
+
+      scope = DiscourseStaffAlias::UsersPostsLink.includes(:user)
+        .where(post_id: post_ids)
+
+      scope.each_with_object({}) do |users_posts_link, object|
+        object[users_posts_link.post_id] = users_posts_link.user.username
+      end
+    end
+  end
+
   add_to_serializer(:post, :include_is_staff_alias?, false) do
     scope.current_user.staff? && @topic_view.present?
   end
@@ -88,6 +123,15 @@ after_initialize do
   add_to_serializer(:post, :is_staff_alias, false) do
     @topic_view.aliased_staff_posts[object.id]
   end
+
+  add_to_serializer(:post, :include_staff_alias_username?, false) do
+    include_is_staff_alias? && is_staff_alias
+  end
+
+  add_to_serializer(:post, :staff_alias_username, false) do
+    @topic_view.aliased_staff_posts_usernames[object.id]
+  end
+
 
   class StaffAliasUserSerializer < BasicUserSerializer
     attributes :moderator
@@ -102,41 +146,23 @@ after_initialize do
   end
 
   add_controller_callback(PostsController, :around_action) do |controller, action|
-    supported_actions = DiscourseStaffAlias::UsersPostLinks::ACTIONS
-    params = controller.params
-    action_name = controller.action_name
+    if DiscourseStaffAlias::CONTROLLER_ACTIONS.include?(action_name = controller.action_name) &&
+       (params = controller.params).dig(*DiscourseStaffAlias::CONTROLLER_PARAMS[action_name]) == "true"
 
-    if params[:as_staff_alias] == "true" && supported_actions.keys.include?(action_name)
       existing_user = controller.current_user
       raise Discourse::InvalidAccess if !existing_user.staff? || params[:whisper]
 
-      is_editing = action_name == DiscourseStaffAlias::UsersPostLinks::UPDATE_POST_ACTION
-
-      if is_editing
-        if !DiscourseStaffAlias::UsersPostLinks.exists?(
-          post_id: params["id"],
-          action: supported_actions[DiscourseStaffAlias::UsersPostLinks::CREATE_POST_ACTION]
-        )
+      if action_name == 'update'
+        if !DiscourseStaffAlias::UsersPostsLink.exists?(post_id: params["id"])
           raise Discourse::InvalidAccess
         end
-      elsif action_name == DiscourseStaffAlias::UsersPostLinks::CREATE_POST_ACTION
-        controller.params[:staff_user_id] = existing_user.id
       end
 
-      controller.with_current_user(DiscourseStaffAlias.alias_user) do
-        Post.transaction do
-          action.call
+      alias_user = DiscourseStaffAlias.alias_user
+      alias_user.aliased_staff_user_id = existing_user.id
 
-          if controller.response.successful? && is_editing
-            DiscourseStaffAlias::UsersPostLinks.create!(
-              user_id: existing_user.id,
-              post_id: params["id"],
-              action: supported_actions[
-                DiscourseStaffAlias::UsersPostLinks::UPDATE_POST_ACTION
-              ]
-            )
-          end
-        end
+      controller.with_current_user(alias_user) do
+        action.call
       end
     else
       action.call
