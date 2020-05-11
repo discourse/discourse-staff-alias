@@ -55,6 +55,19 @@ after_initialize do
     User.class_eval do
       attr_accessor :aliased_staff_user_id
     end
+
+    PostsController.class_eval do
+      def with_current_user(user)
+        @current_user = user
+        yield if block_given?
+      ensure
+        @current_user = nil
+      end
+
+      def current_user
+        @current_user || current_user_provider.current_user
+      end
+    end
   end
 
   on(:before_create_post) do |post|
@@ -73,13 +86,14 @@ after_initialize do
     end
   end
 
-  on(:post_edited) do |post, revisor|
+  on(:post_edited) do |post, _topic_changed, revisor|
     if post.custom_fields[DiscourseStaffAlias::REPLIED_AS_ALIAS] &&
-       revisor.editor.aliased_staff_user_id &&
+       (editor = revisor.instance_variable_get(:@editor)) &&
+       editor.aliased_staff_user_id &&
        revisor.post_revision
 
       DiscourseStaffAlias::UsersPostRevisionsLink.create!(
-        user_id: revisor.editor.aliased_staff_user_id,
+        user_id: editor.aliased_staff_user_id,
         post_revision_id: revisor.post_revision.id
       )
     end
