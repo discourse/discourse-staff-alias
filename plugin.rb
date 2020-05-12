@@ -148,7 +148,7 @@ after_initialize do
   end
 
   add_to_serializer(:post, :include_is_staff_alias?, false) do
-    scope.current_user.staff? && @topic_view.present?
+    scope.current_user&.staff? && @topic_view.present?
   end
 
   add_to_serializer(:post, :is_staff_alias, false) do
@@ -175,11 +175,11 @@ after_initialize do
   end
 
   add_to_serializer(:topic_view, :include_staff_alias_user?, false) do
-    scope.current_user.staff?
+    scope.current_user&.staff?
   end
 
   add_to_serializer(:topic_view, :staff_alias_user, false) do
-    StaffAliasUserSerializer.new(DiscourseStaffAlias.alias_user, root: false)
+    StaffAliasUserSerializer.new(DiscourseStaffAlias.alias_user, root: false).as_json
   end
 
   add_controller_callback(PostsController, :around_action) do |controller, action|
