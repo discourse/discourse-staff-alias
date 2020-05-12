@@ -63,6 +63,27 @@ describe PostsController do
       expect(post.custom_fields).to eq({})
     end
 
+    it 'advances the draft sequence for the staff user' do
+      sign_in(moderator)
+      Draft.set(moderator, post_1.topic.draft_key, 0, 'test')
+      alias_user = DiscourseStaffAlias.alias_user
+
+      expect do
+        post "/posts.json", params: {
+          raw: 'this is a post',
+          topic_id: post_1.topic_id,
+          reply_to_post_number: 1,
+          draft_key: post_1.topic.draft_key,
+          as_staff_alias: true
+        }
+
+        expect(response.status).to eq(200)
+      end.to change { alias_user.posts.count }.by(1)
+        .and change { Draft.where(user_id: moderator.id).count }.by(-1)
+        .and change { DraftSequence.count }.by(1)
+        .and change { DraftSequence.exists?(user_id: moderator.id, draft_key: post_1.topic.draft_key) }.from(false).to(true)
+    end
+
     it 'allows a staff user to post as alias user' do
       sign_in(moderator)
       alias_user = DiscourseStaffAlias.alias_user
@@ -120,6 +141,34 @@ describe PostsController do
       end.to change { post_1.revisions.count }.by(1)
 
       expect(DiscourseStaffAlias::UsersPostRevisionsLink.count).to eq(0)
+    end
+
+    it 'advances the draft sequence for the staff user' do
+      sign_in(moderator)
+
+      post "/posts.json", params: {
+        raw: 'this is a post',
+        topic_id: post_1.topic_id,
+        reply_to_post_number: 1,
+        as_staff_alias: true
+      }
+
+      post_2 = Post.last
+      Draft.set(moderator, post_1.topic.draft_key, 1, 'test')
+
+      expect do
+        put "/posts/#{post_2.id}.json", params: {
+          post: {
+            raw: 'new raw body',
+            edit_reason: 'typo',
+            as_staff_alias: true
+          },
+        }
+
+        expect(response.status).to eq(200)
+      end.to change { post_2.revisions.count }.by(1)
+        .and change { Draft.where(user_id: moderator.id).count }.by(-1)
+        .and change { DraftSequence.current(moderator, post_1.topic.draft_key) }.from(1).to(2)
     end
 
     it 'allows a staff user to edit alised posts as alias user' do

@@ -53,7 +53,7 @@ after_initialize do
 
   reloadable_patch do
     User.class_eval do
-      attr_accessor :aliased_staff_user_id
+      attr_accessor :aliased_staff_user
     end
 
     PostsController.class_eval do
@@ -70,32 +70,40 @@ after_initialize do
     end
   end
 
+  register_ignore_draft_sequence_callback do |user_id|
+    user_id == SiteSetting.get(:discourse_staff_alias_user_id)
+  end
+
   on(:before_create_post) do |post|
-    if post.user.aliased_staff_user_id
+    if post.user.aliased_staff_user
       post.custom_fields ||= {}
       post.custom_fields[DiscourseStaffAlias::REPLIED_AS_ALIAS] = true
     end
   end
 
   on(:post_created) do |post, opts, user|
-    if user.aliased_staff_user_id
+    if user.aliased_staff_user
       DiscourseStaffAlias::UsersPostsLink.create!(
-        user_id: user.aliased_staff_user_id,
+        user_id: user.aliased_staff_user.id,
         post_id: post.id
       )
+
+      DraftSequence.next!(user.aliased_staff_user, opts[:draft_key] || post.topic.draft_key)
     end
   end
 
   on(:post_edited) do |post, _topic_changed, revisor|
     if post.custom_fields[DiscourseStaffAlias::REPLIED_AS_ALIAS] &&
        (editor = revisor.instance_variable_get(:@editor)) &&
-       editor.aliased_staff_user_id &&
+       editor.aliased_staff_user &&
        revisor.post_revision
 
       DiscourseStaffAlias::UsersPostRevisionsLink.create!(
-        user_id: editor.aliased_staff_user_id,
+        user_id: editor.aliased_staff_user.id,
         post_revision_id: revisor.post_revision.id
       )
+
+      DraftSequence.next!(editor.aliased_staff_user, post.topic.draft_key)
     end
   end
 
@@ -177,7 +185,7 @@ after_initialize do
       end
 
       alias_user = DiscourseStaffAlias.alias_user
-      alias_user.aliased_staff_user_id = existing_user.id
+      alias_user.aliased_staff_user = existing_user
 
       controller.with_current_user(alias_user) do
         action.call
