@@ -3,8 +3,8 @@
 class CreateDiscourseStaffAliasUsersPostsLinks < ActiveRecord::Migration[6.0]
   def change
     create_table :discourse_staff_alias_users_posts_links do |t|
-      t.integer :user_id, null: false
-      t.integer :post_id, null: false
+      t.bigint :user_id, null: false
+      t.bigint :post_id, null: false
       t.timestamps
     end
 
