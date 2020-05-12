@@ -147,7 +147,7 @@ after_initialize do
     else
       User.joins("INNER JOIN discourse_staff_alias_users_posts_links ON discourse_staff_alias_users_posts_links.user_id = users.id")
         .where("discourse_staff_alias_users_posts_links.post_id = ?", object.id)
-        .pluck(:username).first
+        .pluck_first(:username)
     end
   end
 
