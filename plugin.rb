@@ -54,6 +54,17 @@ after_initialize do
   reloadable_patch do
     User.class_eval do
       attr_accessor :aliased_staff_user
+
+      has_many :users_posts_links, class_name: "DiscourseStaffAlias::UsersPostsLink", dependent: :delete_all
+      has_many :users_post_revisions_links, class_name: "DiscourseStaffAlias::UsersPostRevisionsLink", dependent: :delete_all
+    end
+
+    Post.class_eval do
+      has_many :users_posts_links, class_name: "DiscourseStaffAlias::UsersPostsLink", dependent: :delete_all
+    end
+
+    PostRevision.class_eval do
+      has_many :users_post_revisions_links, class_name: "DiscourseStaffAlias::UsersPostRevisionsLink", dependent: :delete_all
     end
 
     PostsController.class_eval do
