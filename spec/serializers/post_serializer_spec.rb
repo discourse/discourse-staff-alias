@@ -46,6 +46,18 @@ describe PostSerializer do
       expect(payload[:aliased_staff_username]).to eq(nil)
     end
 
+    it 'should not be included for a non staff user' do
+      serializer = PostSerializer.new(post,
+        scope: Guardian.new,
+        root: false
+      )
+
+      serializer.topic_view = TopicView.new(post.topic_id, user)
+      payload = serializer.as_json
+
+      expect(payload[:aliased_staff_username]).to eq(nil)
+    end
+
     it 'should be included if post is created by staff alias user with topic view' do
       serializer = PostSerializer.new(post,
         scope: Guardian.new(user),
