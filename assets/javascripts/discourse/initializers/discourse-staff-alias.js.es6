@@ -122,7 +122,7 @@ function initialize(api) {
           title: I18n.t("discourse_staff_alias.poster_icon_title", {
             username: attrs.aliased_staff_username
           }),
-          url: `/u/${attrs.aliased_staff_username}/summary`,
+          url: `/u/${attrs.aliased_staff_username}`,
           className: "user-title"
         };
       }

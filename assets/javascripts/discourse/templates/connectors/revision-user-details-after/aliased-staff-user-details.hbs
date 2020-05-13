@@ -1,0 +1,5 @@
+{{#if model.aliased_staff_username}}
+  {{#link-to "user" model.aliased_staff_username class="aliased-staff-user-details"}}
+    <span>({{d-icon "user-secret"}} {{model.aliased_staff_username}})</span>
+  {{/link-to}}
+{{/if}}

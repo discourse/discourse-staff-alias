@@ -157,6 +157,18 @@ after_initialize do
     end
   end
 
+  add_to_serializer(:post_revision, :include_aliased_staff_username?, false) do
+    SiteSetting.discourse_staff_alias_enabled &&
+      scope.current_user&.staff? &&
+      object.post.user_id == SiteSetting.get(:discourse_staff_alias_user_id)
+  end
+
+  add_to_serializer(:post_revision, :aliased_staff_username, false) do
+    User.joins("INNER JOIN discourse_staff_alias_users_post_revisions_links ON discourse_staff_alias_users_post_revisions_links.user_id = users.id")
+      .where("discourse_staff_alias_users_post_revisions_links.post_revision_id = ?", object.id)
+      .pluck_first(:username)
+  end
+
   class StaffAliasUserSerializer < BasicUserSerializer
     attributes :moderator
   end
