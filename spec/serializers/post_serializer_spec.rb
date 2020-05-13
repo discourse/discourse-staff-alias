@@ -25,7 +25,7 @@ describe PostSerializer do
     SiteSetting.set(:discourse_staff_alias_enabled, true)
   end
 
-  describe '#staff_alias_username' do
+  describe '#aliased_staff_username' do
     it 'should not be included if discourse_staff_alias_enabled is false' do
       SiteSetting.set(:discourse_staff_alias_enabled, false)
 
@@ -34,7 +34,7 @@ describe PostSerializer do
         root: false
       ).as_json
 
-      expect(payload[:staff_alias_username]).to eq(nil)
+      expect(payload[:aliased_staff_username]).to eq(nil)
     end
 
     it 'should not be included if post is not created by staff alias user' do
@@ -43,7 +43,7 @@ describe PostSerializer do
         root: false
       ).as_json
 
-      expect(payload[:staff_alias_username]).to eq(nil)
+      expect(payload[:aliased_staff_username]).to eq(nil)
     end
 
     it 'should be included if post is created by staff alias user with topic view' do
@@ -55,7 +55,7 @@ describe PostSerializer do
       serializer.topic_view = TopicView.new(post.topic_id, user)
       payload = serializer.as_json
 
-      expect(payload[:staff_alias_username]).to eq(user.username)
+      expect(payload[:aliased_staff_username]).to eq(user.username)
     end
 
     it 'should be included if post is created by staff alias user without topic view' do
@@ -64,7 +64,7 @@ describe PostSerializer do
         root: false
       ).as_json
 
-      expect(payload[:staff_alias_username]).to eq(user.username)
+      expect(payload[:aliased_staff_username]).to eq(user.username)
     end
   end
 end

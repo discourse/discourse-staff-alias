@@ -97,7 +97,7 @@ describe PostsController do
         }
 
         expect(response.status).to eq(200)
-        expect(response.parsed_body["staff_alias_username"]).to eq(moderator.username)
+        expect(response.parsed_body["aliased_staff_username"]).to eq(moderator.username)
       end.to change { alias_user.posts.count }.by(1)
 
       post = alias_user.posts.last

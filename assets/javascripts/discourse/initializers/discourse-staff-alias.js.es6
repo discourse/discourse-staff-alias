@@ -58,7 +58,7 @@ function initialize(api) {
 
     api.modifyClass("model:post", {
       beforeUpdate(props) {
-        props.as_staff_alias = !!this.staff_alias_username;
+        props.as_staff_alias = !!this.aliased_staff_username;
         return this._super(props);
       }
     });
@@ -96,7 +96,7 @@ function initialize(api) {
         "replyAsStaffAlias",
         "whisper",
         "editingPost",
-        "post.staff_alias_username"
+        "post.aliased_staff_username"
       )
       isReplyAsStaffAlias(
         replyAsStaffAlias,
@@ -112,17 +112,17 @@ function initialize(api) {
       }
     });
 
-    api.includePostAttributes("staff_alias_username");
+    api.includePostAttributes("aliased_staff_username");
 
     api.addPosterIcon((cfs, attrs) => {
-      if (attrs.staff_alias_username) {
+      if (attrs.aliased_staff_username) {
         return {
           icon: "user-secret",
-          text: attrs.staff_alias_username,
+          text: attrs.aliased_staff_username,
           title: I18n.t("discourse_staff_alias.poster_icon_title", {
-            username: attrs.staff_alias_username
+            username: attrs.aliased_staff_username
           }),
-          url: `/u/${attrs.staff_alias_username}/summary`,
+          url: `/u/${attrs.aliased_staff_username}/summary`,
           className: "user-title"
         };
       }

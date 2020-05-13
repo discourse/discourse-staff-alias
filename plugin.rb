@@ -141,12 +141,12 @@ after_initialize do
     end
   end
 
-  add_to_serializer(:post, :include_staff_alias_username?, false) do
+  add_to_serializer(:post, :include_aliased_staff_username?, false) do
     SiteSetting.discourse_staff_alias_enabled &&
       object.user_id == SiteSetting.get(:discourse_staff_alias_user_id)
   end
 
-  add_to_serializer(:post, :staff_alias_username, false) do
+  add_to_serializer(:post, :aliased_staff_username, false) do
     if @topic_view.present?
       @topic_view.aliased_staff_posts_usernames[object.id]
     else
