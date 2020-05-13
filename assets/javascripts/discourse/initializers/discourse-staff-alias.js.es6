@@ -39,7 +39,7 @@ function initialize(api) {
 
     api.modifyClass("model:post", {
       beforeUpdate(props) {
-        props.as_staff_alias = true;
+        props.as_staff_alias = !!this.staff_alias_username;
         return this._super(props);
       }
     });
