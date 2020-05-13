@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 describe PostSerializer do
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user) { Fabricate(:moderator) }
 
   let(:post) do
     post = Fabricate(:post, user: DiscourseStaffAlias.alias_user)
@@ -30,7 +30,7 @@ describe PostSerializer do
       SiteSetting.set(:discourse_staff_alias_enabled, false)
 
       payload = PostSerializer.new(post,
-        scope: Guardian.new(post.user),
+        scope: Guardian.new(user),
         root: false
       ).as_json
 
