@@ -108,6 +108,7 @@ function initialize(api) {
           title: I18n.t("discourse_staff_alias.poster_icon_title", {
             username: attrs.staff_alias_username
           }),
+          url: `/u/${attrs.staff_alias_username}/summary`,
           className: "user-title"
         };
       }
