@@ -68,13 +68,27 @@ function initialize(api) {
 
       @observes("isReplyAsStaffAlias")
       _updateUser() {
-        if (this.topic) {
-          if (this.isReplyAsStaffAlias) {
-            this._originalUser = this.user;
-            this.user = this.topic.staff_alias_user;
-          } else if (this._originalUser) {
-            this.user = this._originalUser;
+        if (this.isReplyAsStaffAlias) {
+          const props = {
+            _presenceStaffOnly: true
+          };
+
+          if (this.topic) {
+            props._originalUser = this.user;
+            props.user = this.get("topic.staff_alias_user");
           }
+
+          this.setProperties(props);
+        } else {
+          const props = {
+            _presenceStaffOnly: false
+          };
+
+          if (this._originalUser) {
+            props.user = this.get("_originalUser");
+          }
+
+          this.setProperties(props);
         }
       },
 
