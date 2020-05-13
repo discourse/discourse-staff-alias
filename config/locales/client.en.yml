@@ -11,3 +11,4 @@ en:
             desc: "Topic will be created under an alias staff user"
     discourse_staff_alias:
       poster_icon_title: "Posted as staff alias by @%{username}"
+      post_revision_icon_title: "Edited as staff alias by @%{username}"

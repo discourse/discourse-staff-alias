@@ -1,5 +1,5 @@
 {{#if model.aliased_staff_username}}
-  {{#link-to "user" model.aliased_staff_username class="aliased-staff-user-details"}}
+  {{#link-to "user" model.aliased_staff_username class="aliased-staff-user-details" title=(i18n "discourse_staff_alias.post_revision_icon_title" username=model.aliased_staff_username)}}
     <span>({{d-icon "user-secret"}} {{model.aliased_staff_username}})</span>
   {{/link-to}}
 {{/if}}
