@@ -27,6 +27,15 @@ describe TopicViewSerializer do
       expect(payload[:staff_alias_user]).to eq(nil)
     end
 
+    it 'should not be included when discourse_staff_alias_enabled is false' do
+      SiteSetting.set(:discourse_staff_alias_enabled, false)
+
+      topic_view = TopicView.new(post.topic_id, moderator)
+      payload = TopicViewSerializer.new(topic_view, scope: Guardian.new(moderator), root: false).as_json
+
+      expect(payload[:staff_alias_user]).to eq(nil)
+    end
+
     it 'should be included for staff users' do
       topic_view = TopicView.new(post.topic_id, moderator)
       payload = TopicViewSerializer.new(topic_view, scope: Guardian.new(moderator), root: false).as_json

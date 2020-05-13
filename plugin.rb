@@ -148,7 +148,9 @@ after_initialize do
   end
 
   add_to_serializer(:post, :include_is_staff_alias?, false) do
-    scope.current_user&.staff? && @topic_view.present?
+    SiteSetting.discourse_staff_alias_enabled &&
+      scope.current_user&.staff? &&
+      @topic_view.present?
   end
 
   add_to_serializer(:post, :is_staff_alias, false) do
@@ -156,8 +158,9 @@ after_initialize do
   end
 
   add_to_serializer(:post, :include_staff_alias_username?, false) do
-    (include_is_staff_alias? && is_staff_alias) ||
-      object.user_id == SiteSetting.get(:discourse_staff_alias_user_id)
+    SiteSetting.discourse_staff_alias_enabled &&
+      ((include_is_staff_alias? && is_staff_alias) ||
+      object.user_id == SiteSetting.get(:discourse_staff_alias_user_id))
   end
 
   add_to_serializer(:post, :staff_alias_username, false) do
@@ -175,7 +178,7 @@ after_initialize do
   end
 
   add_to_serializer(:topic_view, :include_staff_alias_user?, false) do
-    scope.current_user&.staff?
+    SiteSetting.discourse_staff_alias_enabled && scope.current_user&.staff?
   end
 
   add_to_serializer(:topic_view, :staff_alias_user, false) do
