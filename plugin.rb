@@ -120,20 +120,14 @@ after_initialize do
 
   topic_view_post_custom_fields_whitelister { [DiscourseStaffAlias::REPLIED_AS_ALIAS] }
 
-  add_to_class(:topic_view, :aliased_staff_posts) do
-    @aliased_staff_posts ||= begin
-      @post_custom_fields.each_with_object({}) do |field, object|
-        object[field[0]] = true if field[1][DiscourseStaffAlias::REPLIED_AS_ALIAS]
-      end
-    end
-  end
-
   add_to_class(:topic_view, :aliased_staff_posts_usernames) do
     @aliased_staff_posts_usernames ||= begin
       post_ids = []
 
       posts.each do |post|
-        post_ids << post.id if aliased_staff_posts[post.id]
+        if @post_custom_fields.dig(post.id, DiscourseStaffAlias::REPLIED_AS_ALIAS)
+          post_ids << post.id
+        end
       end
 
       return {} if post_ids.empty?
@@ -147,20 +141,9 @@ after_initialize do
     end
   end
 
-  add_to_serializer(:post, :include_is_staff_alias?, false) do
-    SiteSetting.discourse_staff_alias_enabled &&
-      scope.current_user&.staff? &&
-      @topic_view.present?
-  end
-
-  add_to_serializer(:post, :is_staff_alias, false) do
-    @topic_view.aliased_staff_posts[object.id]
-  end
-
   add_to_serializer(:post, :include_staff_alias_username?, false) do
     SiteSetting.discourse_staff_alias_enabled &&
-      ((include_is_staff_alias? && is_staff_alias) ||
-      object.user_id == SiteSetting.get(:discourse_staff_alias_user_id))
+      object.user_id == SiteSetting.get(:discourse_staff_alias_user_id)
   end
 
   add_to_serializer(:post, :staff_alias_username, false) do

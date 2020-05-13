@@ -61,16 +61,16 @@ function initialize(api) {
         "replyAsStaffAlias",
         "whisper",
         "editingPost",
-        "post.is_staff_alias"
+        "post.staff_alias_username"
       )
       isReplyAsStaffAlias(
         replyAsStaffAlias,
         whisper,
         editingPost,
-        isStaffAlias
+        staffAliasUsername
       ) {
         if (editingPost) {
-          return isStaffAlias;
+          return staffAliasUsername;
         } else {
           return !whisper && replyAsStaffAlias;
         }
