@@ -6,15 +6,34 @@ function initialize(api) {
   const currentUser = api.getCurrentUser();
 
   if (currentUser && currentUser.staff) {
+    api.modifySelectKit("composer-actions").prependContent(component => {
+      if (component.action === Composer.CREATE_TOPIC) {
+        return [
+          {
+            name: I18n.t(
+              "composer.composer_actions.as_staff_alias.create_topic.label"
+            ),
+            description: I18n.t(
+              "composer.composer_actions.as_staff_alias.create_topic.desc"
+            ),
+            icon: "user-secret",
+            id: "toggle_reply_as_staff_alias"
+          }
+        ];
+      } else {
+        [];
+      }
+    });
+
     api.modifySelectKit("composer-actions").appendContent(component => {
       if (component.action === Composer.REPLY) {
         return [
           {
             name: I18n.t(
-              "composer.composer_actions.toggle_reply_as_staff_alias.label"
+              "composer.composer_actions.as_staff_alias.reply.label"
             ),
             description: I18n.t(
-              "composer.composer_actions.toggle_reply_as_staff_alias.desc"
+              "composer.composer_actions.as_staff_alias.reply.desc"
             ),
             icon: "user-secret",
             id: "toggle_reply_as_staff_alias"
@@ -49,11 +68,13 @@ function initialize(api) {
 
       @observes("isReplyAsStaffAlias")
       _updateUser() {
-        if (this.isReplyAsStaffAlias) {
-          this._originalUser = this.user;
-          this.user = this.topic.staff_alias_user;
-        } else if (this._originalUser) {
-          this.user = this._originalUser;
+        if (this.topic) {
+          if (this.isReplyAsStaffAlias) {
+            this._originalUser = this.user;
+            this.user = this.topic.staff_alias_user;
+          } else if (this._originalUser) {
+            this.user = this._originalUser;
+          }
         }
       },
 
