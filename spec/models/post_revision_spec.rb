@@ -6,7 +6,6 @@ describe PostRevision do
   fab!(:user) { Fabricate(:user) }
   fab!(:post_revision) { Fabricate(:post_revision) }
 
-
   it 'cleans up users_posts_links association on destroy' do
     link = ::DiscourseStaffAlias::UsersPostRevisionsLink.create!(
       user: user,
