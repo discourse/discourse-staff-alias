@@ -7,8 +7,6 @@ describe PostSerializer do
 
   let(:post) do
     post = Fabricate(:post, user: DiscourseStaffAlias.alias_user)
-    post.custom_fields[DiscourseStaffAlias::REPLIED_AS_ALIAS] = true
-    post.save_custom_fields
 
     DiscourseStaffAlias::UsersPostsLink.create!(
       user: user,

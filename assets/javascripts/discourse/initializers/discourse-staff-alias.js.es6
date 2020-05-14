@@ -1,13 +1,13 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
-import Composer from "discourse/models/composer";
+import Composer, { REPLY, EDIT, CREATE_TOPIC } from "discourse/models/composer";
 
 function initialize(api) {
   const currentUser = api.getCurrentUser();
 
   if (currentUser && currentUser.staff) {
     api.modifySelectKit("composer-actions").prependContent(component => {
-      if (component.action === Composer.CREATE_TOPIC) {
+      if (component.action === CREATE_TOPIC) {
         return [
           {
             name: I18n.t(
@@ -26,14 +26,19 @@ function initialize(api) {
     });
 
     api.modifySelectKit("composer-actions").appendContent(component => {
-      if (component.action === Composer.REPLY) {
+      if (
+        component.action === REPLY ||
+        (component.action === EDIT &&
+          component.get("post.post_type") !==
+            component.get("site.post_types.whisper"))
+      ) {
         return [
           {
             name: I18n.t(
-              "composer.composer_actions.as_staff_alias.reply.label"
+              `composer.composer_actions.as_staff_alias.${component.action}.label`
             ),
             description: I18n.t(
-              "composer.composer_actions.as_staff_alias.reply.desc"
+              `composer.composer_actions.as_staff_alias.${component.action}.desc`
             ),
             icon: "user-secret",
             id: "toggle_reply_as_staff_alias"
@@ -53,13 +58,6 @@ function initialize(api) {
       toggleWhisperSelected(options, model) {
         this._super(...arguments);
         if (model.replyAsStaffAlias) model.set("replyAsStaffAlias", false);
-      }
-    });
-
-    api.modifyClass("model:post", {
-      beforeUpdate(props) {
-        props.as_staff_alias = !!this.aliased_staff_username;
-        return this._super(props);
       }
     });
 
@@ -92,25 +90,14 @@ function initialize(api) {
         }
       },
 
-      @discourseComputed(
-        "replyAsStaffAlias",
-        "whisper",
-        "editingPost",
-        "post.aliased_staff_username"
-      )
-      isReplyAsStaffAlias(
-        replyAsStaffAlias,
-        whisper,
-        editingPost,
-        staffAliasUsername
-      ) {
-        if (editingPost) {
-          return staffAliasUsername;
-        } else {
-          return !whisper && replyAsStaffAlias;
-        }
+      @discourseComputed("replyAsStaffAlias", "whisper")
+      isReplyAsStaffAlias(replyAsStaffAlias, whisper) {
+        return !whisper && replyAsStaffAlias;
       }
     });
+
+    api.serializeOnCreate("as_staff_alias", "isReplyAsStaffAlias");
+    api.serializeOnUpdate("as_staff_alias", "isReplyAsStaffAlias");
 
     api.includePostAttributes("aliased_staff_username");
 
@@ -127,8 +114,6 @@ function initialize(api) {
         };
       }
     });
-
-    Composer.serializeOnCreate("as_staff_alias", "isReplyAsStaffAlias");
   }
 }
 
@@ -139,7 +124,7 @@ export default {
     const siteSettings = container.lookup("site-settings:main");
 
     if (siteSettings.discourse_staff_alias_enabled) {
-      withPluginApi("0.8.43", initialize);
+      withPluginApi("0.9.0", initialize);
     }
   }
 };

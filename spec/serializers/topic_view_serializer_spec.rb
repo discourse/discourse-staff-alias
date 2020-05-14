@@ -5,12 +5,7 @@ require 'rails_helper'
 describe TopicViewSerializer do
   fab!(:user) { Fabricate(:user) }
 
-  fab!(:post) do
-    post = Fabricate(:post)
-    post.custom_fields[DiscourseStaffAlias::REPLIED_AS_ALIAS] = true
-    post.save_custom_fields
-    post
-  end
+  let!(:post) { Fabricate(:post, user_id: SiteSetting.get(:discourse_staff_alias_user_id)) }
 
   fab!(:moderator) { Fabricate(:moderator) }
 

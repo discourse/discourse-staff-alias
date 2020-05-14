@@ -9,8 +9,6 @@ describe PostRevisionSerializer do
     alias_user = DiscourseStaffAlias.alias_user
 
     post = Fabricate(:post, user: alias_user)
-    post.custom_fields[DiscourseStaffAlias::REPLIED_AS_ALIAS] = true
-    post.save_custom_fields
 
     DiscourseStaffAlias::UsersPostsLink.create!(
       user: user,
@@ -26,6 +24,27 @@ describe PostRevisionSerializer do
     )
 
     post
+  end
+
+  let(:post2) do
+    alias_user = DiscourseStaffAlias.alias_user
+
+    post2 = Fabricate(:post)
+
+    DiscourseStaffAlias::UsersPostsLink.create!(
+      user: post2.user,
+      post: post
+    )
+
+    alias_user.aliased_staff_user = post2.user
+
+    PostRevisor.new(post2).revise!(
+      alias_user,
+      { raw: 'this is a new piece of news' },
+      force_new_version: true
+    )
+
+    post2
   end
 
   let(:post_revision) { post.post_revisions.last }
@@ -63,6 +82,15 @@ describe PostRevisionSerializer do
       ).as_json
 
       expect(payload[:aliased_staff_username]).to eq(user.username)
+    end
+
+    it 'should be included if post is created by a normal user' do
+      payload = PostRevisionSerializer.new(post2.post_revisions.last,
+        scope: Guardian.new(user),
+        root: false
+      ).as_json
+
+      expect(payload[:aliased_staff_username]).to eq(post2.user.username)
     end
   end
 end

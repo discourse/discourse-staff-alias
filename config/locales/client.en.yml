@@ -6,6 +6,9 @@ en:
           reply:
             label: "Toggle Reply As Staff Alias"
             desc: "Post will be created under an alias staff user"
+          edit:
+            label: "Toggle Edit As Staff Alias"
+            desc: "Post will be edited under an alias staff user"
           create_topic:
             label: "Create New Topic As Staff Alias"
             desc: "Topic will be created under an alias staff user"

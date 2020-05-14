@@ -4,3 +4,6 @@ en:
     discourse_staff_alias_username: "Username of the alias user"
     errors:
       staff_alias_username_not_set: "You cannot enable discourse-staff-alias unless you've configured 'discourse_staff_alias_username'."
+  post_revisions:
+    errors:
+      cannot_edit_whisper_as_staff_alias: "You cannot edit a whisper as a staff alias user."

@@ -49,8 +49,6 @@ after_initialize do
     end
   end
 
-  register_post_custom_field_type(DiscourseStaffAlias::REPLIED_AS_ALIAS, :boolean)
-
   reloadable_patch do
     User.class_eval do
       attr_accessor :aliased_staff_user
@@ -74,12 +72,6 @@ after_initialize do
 
           existing_user = controller.current_user
           raise Discourse::InvalidAccess if !existing_user.staff? || params[:whisper]
-
-          if action_name == 'update'
-            if !DiscourseStaffAlias::UsersPostsLink.exists?(post_id: params["id"])
-              raise Discourse::InvalidAccess
-            end
-          end
 
           alias_user = DiscourseStaffAlias.alias_user
           alias_user.aliased_staff_user = existing_user
@@ -109,13 +101,6 @@ after_initialize do
     user_id == SiteSetting.get(:discourse_staff_alias_user_id)
   end
 
-  on(:before_create_post) do |post|
-    if post.user.aliased_staff_user
-      post.custom_fields ||= {}
-      post.custom_fields[DiscourseStaffAlias::REPLIED_AS_ALIAS] = true
-    end
-  end
-
   on(:post_created) do |post, opts, user|
     if user.aliased_staff_user
       DiscourseStaffAlias::UsersPostsLink.create!(
@@ -127,11 +112,18 @@ after_initialize do
     end
   end
 
+  add_model_callback(PostRevision, :validate) do
+    if self.user_id == SiteSetting.get(:discourse_staff_alias_user_id) &&
+       self.post.post_type == Post.types[:whisper]
+
+      self.errors.add(:base, I18n.t("post_revisions.errors.cannot_edit_whisper_as_staff_alias"))
+    end
+  end
+
   on(:post_edited) do |post, _topic_changed, revisor|
-    if post.custom_fields[DiscourseStaffAlias::REPLIED_AS_ALIAS] &&
+    if revisor.post_revision&.user_id == SiteSetting.get(:discourse_staff_alias_user_id) &&
        (editor = revisor.instance_variable_get(:@editor)) &&
-       editor.aliased_staff_user &&
-       revisor.post_revision
+       editor.aliased_staff_user
 
       DiscourseStaffAlias::UsersPostRevisionsLink.create!(
         user_id: editor.aliased_staff_user.id,
@@ -142,14 +134,12 @@ after_initialize do
     end
   end
 
-  topic_view_post_custom_fields_whitelister { [DiscourseStaffAlias::REPLIED_AS_ALIAS] }
-
   add_to_class(:topic_view, :aliased_staff_posts_usernames) do
     @aliased_staff_posts_usernames ||= begin
       post_ids = []
 
       posts.each do |post|
-        if @post_custom_fields.dig(post.id, DiscourseStaffAlias::REPLIED_AS_ALIAS)
+        if post.user_id == SiteSetting.get(:discourse_staff_alias_user_id)
           post_ids << post.id
         end
       end
@@ -184,7 +174,7 @@ after_initialize do
   add_to_serializer(:post_revision, :include_aliased_staff_username?, false) do
     SiteSetting.discourse_staff_alias_enabled &&
       scope.current_user&.staff? &&
-      object.post.user_id == SiteSetting.get(:discourse_staff_alias_user_id)
+      object.user_id == SiteSetting.get(:discourse_staff_alias_user_id)
   end
 
   add_to_serializer(:post_revision, :aliased_staff_username, false) do

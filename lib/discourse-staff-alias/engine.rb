@@ -12,8 +12,6 @@ module DiscourseStaffAlias
     end
   end
 
-  REPLIED_AS_ALIAS = 'discourse_staff_alias_replied_as_alias'
-
   CONTROLLER_PARAMS = {
     "create" => [:as_staff_alias],
     "update" => [:post, :as_staff_alias]

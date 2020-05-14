@@ -104,7 +104,6 @@ describe PostsController do
 
       expect(post.raw).to eq('this is a post')
       expect(post.topic_id).to eq(post_1.topic_id)
-      expect(post.custom_fields[DiscourseStaffAlias::REPLIED_AS_ALIAS]).to eq(true)
 
       expect(DiscourseStaffAlias::UsersPostsLink.exists?(
         user_id: moderator.id,
@@ -114,20 +113,6 @@ describe PostsController do
   end
 
   describe '#update' do
-    it 'does not allow staff user to edit normal posts as alias user' do
-      sign_in(moderator)
-
-      put "/posts/#{post_1.id}.json", params: {
-        post: {
-          raw: 'new raw body',
-          edit_reason: 'typo',
-          as_staff_alias: true
-        },
-      }
-
-      expect(response.status).to eq(403)
-    end
-
     it 'does not create links for normal edits' do
       sign_in(moderator)
 
@@ -141,6 +126,28 @@ describe PostsController do
       end.to change { post_1.revisions.count }.by(1)
 
       expect(DiscourseStaffAlias::UsersPostRevisionsLink.count).to eq(0)
+    end
+
+    it 'does not allow a whisper to be edited as an alias user' do
+      sign_in(moderator)
+      alias_user = DiscourseStaffAlias.alias_user
+      post_1.update!(post_type: Post.types[:whisper])
+
+      expect do
+        put "/posts/#{post_1.id}.json", params: {
+          post: {
+            raw: 'new raw body',
+            edit_reason: 'typo',
+            as_staff_alias: true
+          },
+        }
+
+        expect(response.status).to eq(422)
+
+        expect(response.parsed_body["errors"].first).to eq(
+          I18n.t("post_revisions.errors.cannot_edit_whisper_as_staff_alias")
+        )
+      end.to change { post_1.post_revisions.count }.by(0)
     end
 
     it 'advances the draft sequence for the staff user' do
@@ -169,6 +176,35 @@ describe PostsController do
       end.to change { post_2.revisions.count }.by(1)
         .and change { Draft.where(user_id: moderator.id).count }.by(-1)
         .and change { DraftSequence.current(moderator, post_1.topic.draft_key) }.from(1).to(2)
+    end
+
+    it 'allows staff user to edit normal posts as alias user' do
+      sign_in(moderator)
+
+      expect do
+        put "/posts/#{post_1.id}.json", params: {
+          post: {
+            raw: 'new raw body',
+            edit_reason: 'typo',
+            as_staff_alias: true
+          }
+        }
+
+        expect(response.status).to eq(200)
+      end.to change { post_1.revisions.count }.by(1)
+
+      post_1.reload
+
+      expect(post_1.raw).to eq('new raw body')
+
+      revision = post_1.revisions.last
+
+      expect(revision.user_id).to eq(DiscourseStaffAlias.alias_user.id)
+
+      expect(DiscourseStaffAlias::UsersPostRevisionsLink.exists?(
+        user_id: moderator.id,
+        post_revision_id: revision.id,
+      )).to eq(true)
     end
 
     it 'allows a staff user to edit alised posts as alias user' do
