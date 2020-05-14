@@ -68,6 +68,30 @@ after_initialize do
     end
 
     PostsController.class_eval do
+      around_action do |controller, action|
+        if DiscourseStaffAlias::CONTROLLER_ACTIONS.include?(action_name = controller.action_name) &&
+           (params = controller.params).dig(*DiscourseStaffAlias::CONTROLLER_PARAMS[action_name]) == "true"
+
+          existing_user = controller.current_user
+          raise Discourse::InvalidAccess if !existing_user.staff? || params[:whisper]
+
+          if action_name == 'update'
+            if !DiscourseStaffAlias::UsersPostsLink.exists?(post_id: params["id"])
+              raise Discourse::InvalidAccess
+            end
+          end
+
+          alias_user = DiscourseStaffAlias.alias_user
+          alias_user.aliased_staff_user = existing_user
+
+          controller.with_current_user(alias_user) do
+            action.call
+          end
+        else
+          action.call
+        end
+      end
+
       def with_current_user(user)
         @current_user = user
         yield if block_given?
@@ -179,29 +203,5 @@ after_initialize do
 
   add_to_serializer(:topic_view, :staff_alias_user, false) do
     StaffAliasUserSerializer.new(DiscourseStaffAlias.alias_user, root: false).as_json
-  end
-
-  add_controller_callback(PostsController, :around_action) do |controller, action|
-    if DiscourseStaffAlias::CONTROLLER_ACTIONS.include?(action_name = controller.action_name) &&
-       (params = controller.params).dig(*DiscourseStaffAlias::CONTROLLER_PARAMS[action_name]) == "true"
-
-      existing_user = controller.current_user
-      raise Discourse::InvalidAccess if !existing_user.staff? || params[:whisper]
-
-      if action_name == 'update'
-        if !DiscourseStaffAlias::UsersPostsLink.exists?(post_id: params["id"])
-          raise Discourse::InvalidAccess
-        end
-      end
-
-      alias_user = DiscourseStaffAlias.alias_user
-      alias_user.aliased_staff_user = existing_user
-
-      controller.with_current_user(alias_user) do
-        action.call
-      end
-    else
-      action.call
-    end
   end
 end
