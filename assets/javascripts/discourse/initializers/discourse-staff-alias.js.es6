@@ -140,7 +140,7 @@ export default {
     const siteSettings = container.lookup("site-settings:main");
 
     if (siteSettings.discourse_staff_alias_enabled) {
-      withPluginApi("0.9.0", initialize);
+      withPluginApi("0.10.0", initialize);
     }
   }
 };
