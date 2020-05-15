@@ -1,5 +1,5 @@
 import selectKit from "helpers/select-kit-helper";
-import { acceptance, updateCurrentUser } from "helpers/qunit-helpers";
+import { acceptance } from "helpers/qunit-helpers";
 import { _clearSnapshots } from "select-kit/components/composer-actions";
 
 acceptance("Discourse Staff Alias", {

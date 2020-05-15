@@ -1,6 +1,6 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
-import Composer, { REPLY, EDIT, CREATE_TOPIC } from "discourse/models/composer";
+import { REPLY, EDIT, CREATE_TOPIC } from "discourse/models/composer";
 
 function initialize(api) {
   const currentUser = api.getCurrentUser();
