@@ -3,7 +3,8 @@
 require 'rails_helper'
 
 describe PostRevisionSerializer do
-  fab!(:user) { Fabricate(:moderator) }
+  fab!(:moderator) { Fabricate(:moderator) }
+  fab!(:admin) { Fabricate(:admin) }
 
   let(:post) do
     alias_user = DiscourseStaffAlias.alias_user
@@ -11,11 +12,11 @@ describe PostRevisionSerializer do
     post = Fabricate(:post, user: alias_user)
 
     DiscourseStaffAlias::UsersPostsLink.create!(
-      user: user,
+      user: moderator,
       post: post,
     )
 
-    alias_user.aliased_staff_user = user
+    alias_user.aliased_staff_user = moderator
 
     PostRevisor.new(post).revise!(
       alias_user,
@@ -36,7 +37,7 @@ describe PostRevisionSerializer do
       post: post
     )
 
-    alias_user.aliased_staff_user = post2.user
+    alias_user.aliased_staff_user = moderator
 
     PostRevisor.new(post2).revise!(
       alias_user,
@@ -59,7 +60,7 @@ describe PostRevisionSerializer do
       SiteSetting.set(:discourse_staff_alias_enabled, false)
 
       payload = PostRevisionSerializer.new(post_revision,
-        scope: Guardian.new(user),
+        scope: Guardian.new(moderator),
         root: false
       ).as_json
 
@@ -77,20 +78,31 @@ describe PostRevisionSerializer do
 
     it 'should be included if post is created by staff alias user' do
       payload = PostRevisionSerializer.new(post_revision,
-        scope: Guardian.new(user),
+        scope: Guardian.new(moderator),
         root: false
       ).as_json
 
-      expect(payload[:aliased_staff_username]).to eq(user.username)
+      expect(payload[:aliased_staff_username]).to eq(moderator.username)
     end
 
     it 'should be included if post is created by a normal user' do
       payload = PostRevisionSerializer.new(post2.post_revisions.last,
-        scope: Guardian.new(user),
+        scope: Guardian.new(moderator),
         root: false
       ).as_json
 
-      expect(payload[:aliased_staff_username]).to eq(post2.user.username)
+      expect(payload[:aliased_staff_username]).to eq(moderator.username)
+    end
+
+    it 'should equal user delete message if aliased user has been deleted' do
+      moderator.destroy!
+
+      payload = PostRevisionSerializer.new(post2.post_revisions.last,
+        scope: Guardian.new(admin),
+        root: false
+      ).as_json
+
+      expect(payload[:aliased_staff_username]).to eq(I18n.t("aliased_user_deleted"))
     end
   end
 end

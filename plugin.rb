@@ -193,7 +193,7 @@ after_initialize do
   add_to_serializer(:post_revision, :aliased_staff_username, false) do
     User.joins("INNER JOIN discourse_staff_alias_users_post_revisions_links ON discourse_staff_alias_users_post_revisions_links.user_id = users.id")
       .where("discourse_staff_alias_users_post_revisions_links.post_revision_id = ?", object.id)
-      .pluck_first(:username)
+      .pluck_first(:username) || I18n.t("aliased_user_deleted")
   end
 
   class StaffAliasUserSerializer < BasicUserSerializer
