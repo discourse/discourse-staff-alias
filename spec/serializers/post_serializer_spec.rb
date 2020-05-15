@@ -23,6 +23,19 @@ describe PostSerializer do
     SiteSetting.set(:discourse_staff_alias_enabled, true)
   end
 
+  describe '#is_staff_aliased' do
+    it 'should be true if post is created by staff alias user' do
+      serializer = PostSerializer.new(post,
+        scope: Guardian.new(user),
+        root: false
+      )
+
+      payload = serializer.as_json
+
+      expect(payload[:is_staff_aliased]).to eq(true)
+    end
+  end
+
   describe '#aliased_staff_username' do
     it 'should not be included if discourse_staff_alias_enabled is false' do
       SiteSetting.set(:discourse_staff_alias_enabled, false)

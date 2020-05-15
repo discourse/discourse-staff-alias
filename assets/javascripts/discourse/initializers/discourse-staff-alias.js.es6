@@ -31,7 +31,7 @@ function initialize(api) {
         (component.action === EDIT &&
           component.get("post.post_type") !==
             component.get("site.post_types.whisper") &&
-          !component.get("post.aliased_staff_username"))
+          !component.get("post.is_staff_aliased"))
       ) {
         return [
           {
@@ -95,15 +95,15 @@ function initialize(api) {
         "replyAsStaffAlias",
         "whisper",
         "editingPost",
-        "post.aliased_staff_username"
+        "post.is_staff_aliased"
       )
       isReplyAsStaffAlias(
         replyAsStaffAlias,
         whisper,
         editingPost,
-        aliasedStaffUsername
+        isStaffAliased
       ) {
-        if (editingPost && aliasedStaffUsername) {
+        if (editingPost && isStaffAliased) {
           return true;
         } else {
           return !whisper && replyAsStaffAlias;
