@@ -152,7 +152,7 @@ after_initialize do
         .where(post_id: post_ids)
 
       scope.each_with_object({}) do |users_posts_link, object|
-        object[users_posts_link.post_id] = users_posts_link.user.username
+        object[users_posts_link.post_id] = users_posts_link.user&.username
       end
     end
   end
@@ -172,13 +172,16 @@ after_initialize do
   end
 
   add_to_serializer(:post, :aliased_staff_username, false) do
-    if @topic_view.present?
-      @topic_view.aliased_staff_posts_usernames[object.id]
-    else
-      User.joins("INNER JOIN discourse_staff_alias_users_posts_links ON discourse_staff_alias_users_posts_links.user_id = users.id")
-        .where("discourse_staff_alias_users_posts_links.post_id = ?", object.id)
-        .pluck_first(:username)
-    end
+    username =
+      if @topic_view.present?
+        @topic_view.aliased_staff_posts_usernames[object.id]
+      else
+        User.joins("INNER JOIN discourse_staff_alias_users_posts_links ON discourse_staff_alias_users_posts_links.user_id = users.id")
+          .where("discourse_staff_alias_users_posts_links.post_id = ?", object.id)
+          .pluck_first(:username)
+      end
+
+    username || I18n.t("aliased_user_deleted")
   end
 
   add_to_serializer(:post_revision, :include_aliased_staff_username?, false) do

@@ -4,6 +4,7 @@ require 'rails_helper'
 
 describe PostSerializer do
   fab!(:user) { Fabricate(:moderator) }
+  fab!(:admin) { Fabricate(:admin) }
 
   let(:post) do
     post = Fabricate(:post, user: DiscourseStaffAlias.alias_user)
@@ -88,6 +89,17 @@ describe PostSerializer do
       ).as_json
 
       expect(payload[:aliased_staff_username]).to eq(user.username)
+    end
+
+    it 'should be included if aliased staff user has been deleted' do
+      user.destroy!
+
+      payload = PostSerializer.new(post,
+        scope: Guardian.new(admin),
+        root: false
+      ).as_json
+
+      expect(payload[:aliased_staff_username]).to eq(I18n.t("aliased_user_deleted"))
     end
   end
 end
