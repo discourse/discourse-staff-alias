@@ -178,7 +178,7 @@ after_initialize do
         .where(post_id: post_ids)
 
       scope.each_with_object({}) do |users_posts_link, object|
-        object[users_posts_link.post_id] = users_posts_link.user.username
+        object[users_posts_link.post_id] = users_posts_link.user&.username
       end
     end
   end
@@ -205,6 +205,16 @@ after_initialize do
         .where("discourse_staff_alias_users_posts_links.post_id = ?", object.id)
         .pluck_first(:username)
     end
+  end
+
+  add_to_serializer(:post_revision, :include_is_staff_aliased?, false) do
+    SiteSetting.discourse_staff_alias_enabled &&
+      scope.current_user&.staff? &&
+      object.user_id == SiteSetting.get(:discourse_staff_alias_user_id)
+  end
+
+  add_to_serializer(:post_revision, :is_staff_aliased, false) do
+    object.user_id == SiteSetting.get(:discourse_staff_alias_user_id)
   end
 
   add_to_serializer(:post_revision, :include_aliased_staff_username?, false) do

@@ -54,6 +54,17 @@ describe PostRevisionSerializer do
     SiteSetting.set(:discourse_staff_alias_enabled, true)
   end
 
+  describe '#is_staff_aliased' do
+    it 'should be true if post revision is created by staff alias user' do
+      payload = PostRevisionSerializer.new(post_revision,
+        scope: Guardian.new(user),
+        root: false
+      ).as_json
+
+      expect(payload[:is_staff_aliased]).to eq(true)
+    end
+  end
+
   describe '#aliased_staff_username' do
     it 'should not be included if discourse_staff_alias_enabled is false' do
       SiteSetting.set(:discourse_staff_alias_enabled, false)
@@ -66,7 +77,7 @@ describe PostRevisionSerializer do
       expect(payload[:aliased_staff_username]).to eq(nil)
     end
 
-    it 'should be included for a non-staff user' do
+    it 'should not be included for a non-staff user' do
       payload = PostRevisionSerializer.new(post_revision,
         scope: Guardian.new,
         root: false

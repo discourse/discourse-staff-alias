@@ -1,4 +1,5 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
+import I18n from "I18n";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import { REPLY, EDIT, CREATE_TOPIC } from "discourse/models/composer";
 
@@ -116,18 +117,28 @@ function initialize(api) {
     api.serializeToTopic("as_staff_alias", "isReplyAsStaffAlias");
 
     api.includePostAttributes("aliased_staff_username");
+    api.includePostAttributes("is_staff_aliased");
 
     api.addPosterIcon((cfs, attrs) => {
-      if (attrs.aliased_staff_username) {
-        return {
+      if (attrs.is_staff_aliased) {
+        const props = {
           icon: "user-secret",
-          text: attrs.aliased_staff_username,
-          title: I18n.t("discourse_staff_alias.poster_icon_title", {
-            username: attrs.aliased_staff_username
-          }),
-          url: `/u/${attrs.aliased_staff_username}`,
           className: "user-title"
         };
+
+        if (attrs.aliased_staff_username) {
+          props.text = attrs.aliased_staff_username;
+
+          props.title = I18n.t("discourse_staff_alias.poster_icon_title", {
+            username: attrs.aliased_staff_username
+          });
+
+          props.url = `/u/${attrs.aliased_staff_username}`;
+        } else {
+          props.text = I18n.t("discourse_staff_alias.aliased_user_deleted");
+        }
+
+        return props;
       }
     });
   }

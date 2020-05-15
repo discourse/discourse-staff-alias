@@ -6,7 +6,12 @@ span.poster-icon .d-icon {
   margin: 0px 5px;
 }
 
-.aliased-staff-user-details,
-.aliased-staff-user-details:visited {
+.aliased-staff-user-details {
+  display: inline;
   color: $primary-medium;
+
+  a,
+  a:visited {
+    color: $primary-medium;
+  }
 }
