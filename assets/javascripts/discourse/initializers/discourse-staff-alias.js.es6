@@ -30,7 +30,8 @@ function initialize(api) {
         component.action === REPLY ||
         (component.action === EDIT &&
           component.get("post.post_type") !==
-            component.get("site.post_types.whisper"))
+            component.get("site.post_types.whisper") &&
+          !component.get("post.aliased_staff_username"))
       ) {
         return [
           {
@@ -90,9 +91,23 @@ function initialize(api) {
         }
       },
 
-      @discourseComputed("replyAsStaffAlias", "whisper")
-      isReplyAsStaffAlias(replyAsStaffAlias, whisper) {
-        return !whisper && replyAsStaffAlias;
+      @discourseComputed(
+        "replyAsStaffAlias",
+        "whisper",
+        "editingPost",
+        "post.aliased_staff_username"
+      )
+      isReplyAsStaffAlias(
+        replyAsStaffAlias,
+        whisper,
+        editingPost,
+        aliasedStaffUsername
+      ) {
+        if (editingPost && aliasedStaffUsername) {
+          return true;
+        } else {
+          return !whisper && replyAsStaffAlias;
+        }
       }
     });
 

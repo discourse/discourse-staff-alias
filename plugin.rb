@@ -113,10 +113,12 @@ after_initialize do
   end
 
   add_model_callback(PostRevision, :validate) do
-    if self.user_id == SiteSetting.get(:discourse_staff_alias_user_id) &&
-       self.post.post_type == Post.types[:whisper]
-
-      self.errors.add(:base, I18n.t("post_revisions.errors.cannot_edit_whisper_as_staff_alias"))
+    if self.user_id == SiteSetting.get(:discourse_staff_alias_user_id)
+      if self.post.post_type == Post.types[:whisper]
+        self.errors.add(:base, I18n.t("post_revisions.errors.cannot_edit_whisper_as_staff_alias"))
+      end
+    elsif self.post.user_id == SiteSetting.get(:discourse_staff_alias_user_id)
+      self.errors.add(:base, I18n.t("post_revisions.errors.cannot_edit_aliased_post_as_staff"))
     end
   end
 

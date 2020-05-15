@@ -150,6 +150,34 @@ describe PostsController do
       end.to change { post_1.post_revisions.count }.by(0)
     end
 
+    it 'does not allow a post by the alias user to be edited as staff user' do
+      sign_in(moderator)
+
+      post "/posts.json", params: {
+        raw: 'this is a post',
+        topic_id: post_1.topic_id,
+        reply_to_post_number: 1,
+        as_staff_alias: true
+      }
+
+      post_2 = Post.last
+
+      expect do
+        put "/posts/#{post_2.id}.json", params: {
+          post: {
+            raw: 'new raw body',
+            edit_reason: 'typo'
+          },
+        }
+
+        expect(response.status).to eq(422)
+
+        expect(response.parsed_body["errors"].first).to eq(
+          I18n.t("post_revisions.errors.cannot_edit_aliased_post_as_staff")
+        )
+      end.to change { post_1.post_revisions.count }.by(0)
+    end
+
     it 'advances the draft sequence for the staff user' do
       sign_in(moderator)
 
