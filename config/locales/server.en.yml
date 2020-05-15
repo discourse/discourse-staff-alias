@@ -8,4 +8,3 @@ en:
     errors:
       cannot_edit_whisper_as_staff_alias: "You cannot edit a whisper as a staff alias user."
       cannot_edit_aliased_post_as_staff: "You can only edit a staff alias post as the staff alias user."
-  aliased_user_deleted: "Aliased user has been deleted"
