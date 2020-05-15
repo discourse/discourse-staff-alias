@@ -7,7 +7,7 @@ describe User do
   fab!(:post) { Fabricate(:post) }
   fab!(:post_revision) { Fabricate(:post_revision) }
 
-  it 'cleans up users_posts_links association on destroy' do
+  it 'does not clean up users_posts_links association on destroy' do
     link = ::DiscourseStaffAlias::UsersPostsLink.create!(
       user: user,
       post: post
@@ -18,10 +18,10 @@ describe User do
     UserDestroyer.new(Discourse.system_user).destroy(user)
 
     expect(User.exists?(id: user.id)).to eq(false)
-    expect(DiscourseStaffAlias::UsersPostsLink.exists?(user_id: user.id)).to eq(false)
+    expect(DiscourseStaffAlias::UsersPostsLink.exists?(user_id: user.id)).to eq(true)
   end
 
-  it 'cleans up users_post_revisions_links association on destroy' do
+  it 'does not clean up users_post_revisions_links association on destroy' do
     link = ::DiscourseStaffAlias::UsersPostRevisionsLink.create!(
       user: user,
       post_revision: post_revision
@@ -32,6 +32,6 @@ describe User do
     UserDestroyer.new(Discourse.system_user).destroy(user)
 
     expect(User.exists?(id: user.id)).to eq(false)
-    expect(DiscourseStaffAlias::UsersPostRevisionsLink.exists?(user_id: user.id)).to eq(false)
+    expect(DiscourseStaffAlias::UsersPostRevisionsLink.exists?(user_id: user.id)).to eq(true)
   end
 end
