@@ -113,6 +113,7 @@ function initialize(api) {
 
     api.serializeOnCreate("as_staff_alias", "isReplyAsStaffAlias");
     api.serializeOnUpdate("as_staff_alias", "isReplyAsStaffAlias");
+    api.serializeToTopic("as_staff_alias", "isReplyAsStaffAlias");
 
     api.includePostAttributes("aliased_staff_username");
 

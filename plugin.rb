@@ -57,6 +57,19 @@ after_initialize do
       has_many :users_post_revisions_links, class_name: "DiscourseStaffAlias::UsersPostRevisionsLink"
     end
 
+    module WithCurrentUser
+      def with_current_user(user)
+        @current_user = user
+        yield if block_given?
+      ensure
+        @current_user = nil
+      end
+
+      def current_user
+        @current_user || current_user_provider.current_user
+      end
+    end
+
     Post.class_eval do
       has_many :users_posts_links, class_name: "DiscourseStaffAlias::UsersPostsLink", dependent: :delete_all
     end
@@ -65,7 +78,31 @@ after_initialize do
       has_many :users_post_revisions_links, class_name: "DiscourseStaffAlias::UsersPostRevisionsLink", dependent: :delete_all
     end
 
+    TopicsController.class_eval do
+      include WithCurrentUser
+
+      around_action do |controller, action|
+        if (action_name = controller.action_name) == 'update' &&
+          (params = controller.params)["as_staff_alias"]
+
+          existing_user = controller.current_user
+          raise Discourse::InvalidAccess if !existing_user.staff?
+
+          alias_user = DiscourseStaffAlias.alias_user
+          alias_user.aliased_staff_user = existing_user
+
+          controller.with_current_user(alias_user) do
+            action.call
+          end
+        else
+          action.call
+        end
+      end
+    end
+
     PostsController.class_eval do
+      include WithCurrentUser
+
       around_action do |controller, action|
         if DiscourseStaffAlias::CONTROLLER_ACTIONS.include?(action_name = controller.action_name) &&
            (params = controller.params).dig(*DiscourseStaffAlias::CONTROLLER_PARAMS[action_name]) == "true"
@@ -82,17 +119,6 @@ after_initialize do
         else
           action.call
         end
-      end
-
-      def with_current_user(user)
-        @current_user = user
-        yield if block_given?
-      ensure
-        @current_user = nil
-      end
-
-      def current_user
-        @current_user || current_user_provider.current_user
       end
     end
   end
