@@ -21,8 +21,8 @@ describe PostsController do
   let(:topic) { post_1.topic }
 
   before do
-    SiteSetting.set(:discourse_staff_alias_username, 'some_alias')
-    SiteSetting.set(:discourse_staff_alias_enabled, true)
+    SiteSetting.set(:staff_alias_username, 'some_alias')
+    SiteSetting.set(:staff_alias_enabled, true)
     SiteSetting.set(:editing_grace_period, 0)
   end
 

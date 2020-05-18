@@ -5,13 +5,13 @@ require 'rails_helper'
 describe TopicViewSerializer do
   fab!(:user) { Fabricate(:user) }
 
-  let!(:post) { Fabricate(:post, user_id: SiteSetting.get(:discourse_staff_alias_user_id)) }
+  let!(:post) { Fabricate(:post, user_id: SiteSetting.get(:staff_alias_user_id)) }
 
   fab!(:moderator) { Fabricate(:moderator) }
 
   before do
-    SiteSetting.set(:discourse_staff_alias_username, 'some_alias')
-    SiteSetting.set(:discourse_staff_alias_enabled, true)
+    SiteSetting.set(:staff_alias_username, 'some_alias')
+    SiteSetting.set(:staff_alias_enabled, true)
   end
 
   describe '#staff_alias_user' do
@@ -22,8 +22,8 @@ describe TopicViewSerializer do
       expect(payload[:staff_alias_user]).to eq(nil)
     end
 
-    it 'should not be included when discourse_staff_alias_enabled is false' do
-      SiteSetting.set(:discourse_staff_alias_enabled, false)
+    it 'should not be included when staff_alias_enabled is false' do
+      SiteSetting.set(:staff_alias_enabled, false)
 
       topic_view = TopicView.new(post.topic_id, moderator)
       payload = TopicViewSerializer.new(topic_view, scope: Guardian.new(moderator), root: false).as_json
@@ -37,7 +37,7 @@ describe TopicViewSerializer do
 
       staff_alias_user = payload[:staff_alias_user]
 
-      expect(staff_alias_user[:id]).to eq(SiteSetting.discourse_staff_alias_user_id)
+      expect(staff_alias_user[:id]).to eq(SiteSetting.staff_alias_user_id)
     end
   end
 end

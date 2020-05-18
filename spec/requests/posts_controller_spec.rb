@@ -8,8 +8,8 @@ describe PostsController do
   fab!(:post_1) { Fabricate(:post, user: moderator) }
 
   before do
-    SiteSetting.set(:discourse_staff_alias_username, 'some_alias')
-    SiteSetting.set(:discourse_staff_alias_enabled, true)
+    SiteSetting.set(:staff_alias_username, 'some_alias')
+    SiteSetting.set(:staff_alias_enabled, true)
   end
 
   describe '#create' do

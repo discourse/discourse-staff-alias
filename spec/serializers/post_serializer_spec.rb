@@ -19,8 +19,8 @@ describe PostSerializer do
   fab!(:post2) { Fabricate(:post) }
 
   before do
-    SiteSetting.set(:discourse_staff_alias_username, 'some_alias')
-    SiteSetting.set(:discourse_staff_alias_enabled, true)
+    SiteSetting.set(:staff_alias_username, 'some_alias')
+    SiteSetting.set(:staff_alias_enabled, true)
   end
 
   describe '#is_staff_aliased' do
@@ -37,8 +37,8 @@ describe PostSerializer do
   end
 
   describe '#aliased_staff_username' do
-    it 'should not be included if discourse_staff_alias_enabled is false' do
-      SiteSetting.set(:discourse_staff_alias_enabled, false)
+    it 'should not be included if staff_alias_enabled is false' do
+      SiteSetting.set(:staff_alias_enabled, false)
 
       payload = PostSerializer.new(post,
         scope: Guardian.new(user),

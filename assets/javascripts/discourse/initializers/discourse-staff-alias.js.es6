@@ -150,7 +150,7 @@ export default {
   initialize(container) {
     const siteSettings = container.lookup("site-settings:main");
 
-    if (siteSettings.discourse_staff_alias_enabled) {
+    if (siteSettings.staff_alias_enabled) {
       withPluginApi("0.10.0", initialize);
     }
   }

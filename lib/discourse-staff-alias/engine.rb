@@ -20,10 +20,10 @@ module DiscourseStaffAlias
   CONTROLLER_ACTIONS = ["create", "update"]
 
   def self.enabled?
-    SiteSetting.discourse_staff_alias_enabled
+    SiteSetting.staff_alias_enabled
   end
 
   def self.alias_user
-    User.find_by(id: SiteSetting.discourse_staff_alias_user_id)
+    User.find_by(id: SiteSetting.staff_alias_user_id)
   end
 end

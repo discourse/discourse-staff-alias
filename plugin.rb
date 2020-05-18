@@ -6,7 +6,7 @@
 # authors: tgxworld
 # url: https://github.com/discourse/discourse-staff-alias
 
-enabled_site_setting :discourse_staff_alias_enabled
+enabled_site_setting :staff_alias_enabled
 
 PLUGIN_NAME ||= 'DiscourseStaffAlias'
 
@@ -22,7 +22,7 @@ register_asset 'stylesheets/common/discourse-staff-alias.scss'
 
 after_initialize do
   DiscourseEvent.on(:site_setting_changed) do |name, _old_value, new_value|
-    if name.to_s == 'discourse_staff_alias_username' && new_value.present?
+    if name.to_s == 'staff_alias_username' && new_value.present?
       DistributedMutex.synchronize("discourse_staff_alias") do
         if alias_user = DiscourseStaffAlias.alias_user
           UsernameChanger.change(
@@ -43,7 +43,7 @@ after_initialize do
             approved: true
           )
 
-          SiteSetting.set(:discourse_staff_alias_user_id, user.id)
+          SiteSetting.set(:staff_alias_user_id, user.id)
         end
       end
     end
@@ -124,7 +124,7 @@ after_initialize do
   end
 
   register_ignore_draft_sequence_callback do |user_id|
-    user_id == SiteSetting.get(:discourse_staff_alias_user_id)
+    user_id == SiteSetting.get(:staff_alias_user_id)
   end
 
   on(:post_created) do |post, opts, user|
@@ -139,17 +139,17 @@ after_initialize do
   end
 
   add_model_callback(PostRevision, :validate) do
-    if self.user_id == SiteSetting.get(:discourse_staff_alias_user_id)
+    if self.user_id == SiteSetting.get(:staff_alias_user_id)
       if self.post.post_type == Post.types[:whisper]
         self.errors.add(:base, I18n.t("post_revisions.errors.cannot_edit_whisper_as_staff_alias"))
       end
-    elsif self.post.user_id == SiteSetting.get(:discourse_staff_alias_user_id)
+    elsif self.post.user_id == SiteSetting.get(:staff_alias_user_id)
       self.errors.add(:base, I18n.t("post_revisions.errors.cannot_edit_aliased_post_as_staff"))
     end
   end
 
   on(:post_edited) do |post, _topic_changed, revisor|
-    if revisor.post_revision&.user_id == SiteSetting.get(:discourse_staff_alias_user_id) &&
+    if revisor.post_revision&.user_id == SiteSetting.get(:staff_alias_user_id) &&
        (editor = revisor.instance_variable_get(:@editor)) &&
        editor.aliased_staff_user
 
@@ -167,7 +167,7 @@ after_initialize do
       post_ids = []
 
       posts.each do |post|
-        if post.user_id == SiteSetting.get(:discourse_staff_alias_user_id)
+        if post.user_id == SiteSetting.get(:staff_alias_user_id)
           post_ids << post.id
         end
       end
@@ -184,13 +184,13 @@ after_initialize do
   end
 
   add_to_serializer(:post, :include_is_staff_aliased?, false) do
-    SiteSetting.discourse_staff_alias_enabled &&
+    SiteSetting.staff_alias_enabled &&
       scope.current_user&.staff? &&
-      object.user_id == SiteSetting.get(:discourse_staff_alias_user_id)
+      object.user_id == SiteSetting.get(:staff_alias_user_id)
   end
 
   add_to_serializer(:post, :is_staff_aliased, false) do
-    object.user_id == SiteSetting.get(:discourse_staff_alias_user_id)
+    object.user_id == SiteSetting.get(:staff_alias_user_id)
   end
 
   add_to_serializer(:post, :include_aliased_staff_username?, false) do
@@ -208,19 +208,19 @@ after_initialize do
   end
 
   add_to_serializer(:post_revision, :include_is_staff_aliased?, false) do
-    SiteSetting.discourse_staff_alias_enabled &&
+    SiteSetting.staff_alias_enabled &&
       scope.current_user&.staff? &&
-      object.user_id == SiteSetting.get(:discourse_staff_alias_user_id)
+      object.user_id == SiteSetting.get(:staff_alias_user_id)
   end
 
   add_to_serializer(:post_revision, :is_staff_aliased, false) do
-    object.user_id == SiteSetting.get(:discourse_staff_alias_user_id)
+    object.user_id == SiteSetting.get(:staff_alias_user_id)
   end
 
   add_to_serializer(:post_revision, :include_aliased_staff_username?, false) do
-    SiteSetting.discourse_staff_alias_enabled &&
+    SiteSetting.staff_alias_enabled &&
       scope.current_user&.staff? &&
-      object.user_id == SiteSetting.get(:discourse_staff_alias_user_id)
+      object.user_id == SiteSetting.get(:staff_alias_user_id)
   end
 
   add_to_serializer(:post_revision, :aliased_staff_username, false) do
@@ -234,7 +234,7 @@ after_initialize do
   end
 
   add_to_serializer(:topic_view, :include_staff_alias_user?, false) do
-    SiteSetting.discourse_staff_alias_enabled && scope.current_user&.staff?
+    SiteSetting.staff_alias_enabled && scope.current_user&.staff?
   end
 
   add_to_serializer(:topic_view, :staff_alias_user, false) do

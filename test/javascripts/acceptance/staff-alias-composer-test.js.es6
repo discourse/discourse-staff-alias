@@ -6,7 +6,7 @@ acceptance("Discourse Staff Alias", {
   loggedIn: true,
   settings: {
     enable_whispers: true,
-    discourse_staff_alias_enabled: true
+    staff_alias_enabled: true
   },
   beforeEach() {
     _clearSnapshots();

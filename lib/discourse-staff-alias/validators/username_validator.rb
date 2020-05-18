@@ -5,7 +5,7 @@ class DiscourseStaffAlias::UsernameValidator
   end
 
   def valid_value?(val)
-    return true if val.blank? && SiteSetting.get(:discourse_staff_alias_user_id).zero?
+    return true if val.blank? && SiteSetting.get(:staff_alias_user_id).zero?
     @result = UsernameCheckerService.new.check_username(val, nil)
     return false if @result[:errors]
     @result[:available]

@@ -1,12 +1,12 @@
 plugins:
-  discourse_staff_alias_enabled:
+  staff_alias_enabled:
     default: false
     client: true
     validator: "DiscourseStaffAlias::EnabledValidator"
-  discourse_staff_alias_user_id:
+  staff_alias_user_id:
     default: 0
     hidden: true
-  discourse_staff_alias_username:
+  staff_alias_username:
     default: ""
     client: true
     validator: "DiscourseStaffAlias::UsernameValidator"
