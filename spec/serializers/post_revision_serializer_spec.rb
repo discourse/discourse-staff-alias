@@ -19,7 +19,7 @@ describe PostRevisionSerializer do
       post: post,
     )
 
-    alias_user.aliased_staff_user = moderator
+    alias_user.aliased_user = moderator
 
     PostRevisor.new(post).revise!(
       alias_user,
@@ -40,7 +40,7 @@ describe PostRevisionSerializer do
       post: post
     )
 
-    alias_user.aliased_staff_user = post2.user
+    alias_user.aliased_user = post2.user
 
     PostRevisor.new(post2).revise!(
       alias_user,
@@ -69,7 +69,7 @@ describe PostRevisionSerializer do
     end
   end
 
-  describe '#aliased_staff_username' do
+  describe '#aliased_username' do
     it 'should not be included if staff_alias_enabled is false' do
       SiteSetting.set(:staff_alias_enabled, false)
 
@@ -78,7 +78,7 @@ describe PostRevisionSerializer do
         root: false
       ).as_json
 
-      expect(payload[:aliased_staff_username]).to eq(nil)
+      expect(payload[:aliased_username]).to eq(nil)
     end
 
     it 'should not be included for a non-staff user' do
@@ -87,7 +87,7 @@ describe PostRevisionSerializer do
         root: false
       ).as_json
 
-      expect(payload[:aliased_staff_username]).to eq(nil)
+      expect(payload[:aliased_username]).to eq(nil)
     end
 
     it 'should be included if post is created by staff alias user' do
@@ -96,7 +96,7 @@ describe PostRevisionSerializer do
         root: false
       ).as_json
 
-      expect(payload[:aliased_staff_username]).to eq(moderator.username)
+      expect(payload[:aliased_username]).to eq(moderator.username)
     end
 
     it 'should be included if post is created by a normal user' do
@@ -105,7 +105,7 @@ describe PostRevisionSerializer do
         root: false
       ).as_json
 
-      expect(payload[:aliased_staff_username]).to eq(post2.user.username)
+      expect(payload[:aliased_username]).to eq(post2.user.username)
     end
   end
 end

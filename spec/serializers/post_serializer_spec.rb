@@ -40,7 +40,7 @@ describe PostSerializer do
     end
   end
 
-  describe '#aliased_staff_username' do
+  describe '#aliased_username' do
     it 'should not be included if staff_alias_enabled is false' do
       SiteSetting.set(:staff_alias_enabled, false)
 
@@ -49,7 +49,7 @@ describe PostSerializer do
         root: false
       ).as_json
 
-      expect(payload[:aliased_staff_username]).to eq(nil)
+      expect(payload[:aliased_username]).to eq(nil)
     end
 
     it 'should not be included if post is not created by staff alias user' do
@@ -58,7 +58,7 @@ describe PostSerializer do
         root: false
       ).as_json
 
-      expect(payload[:aliased_staff_username]).to eq(nil)
+      expect(payload[:aliased_username]).to eq(nil)
     end
 
     it 'should not be included for a non staff user' do
@@ -70,7 +70,7 @@ describe PostSerializer do
       serializer.topic_view = TopicView.new(post.topic_id, moderator)
       payload = serializer.as_json
 
-      expect(payload[:aliased_staff_username]).to eq(nil)
+      expect(payload[:aliased_username]).to eq(nil)
     end
 
     it 'should be included if post is created by staff alias user with topic view' do
@@ -82,7 +82,7 @@ describe PostSerializer do
       serializer.topic_view = TopicView.new(post.topic_id, moderator)
       payload = serializer.as_json
 
-      expect(payload[:aliased_staff_username]).to eq(moderator.username)
+      expect(payload[:aliased_username]).to eq(moderator.username)
     end
 
     it 'should be included if post is created by staff alias user without topic view' do
@@ -91,7 +91,7 @@ describe PostSerializer do
         root: false
       ).as_json
 
-      expect(payload[:aliased_staff_username]).to eq(moderator.username)
+      expect(payload[:aliased_username]).to eq(moderator.username)
     end
   end
 end

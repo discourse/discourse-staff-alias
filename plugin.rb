@@ -51,7 +51,7 @@ after_initialize do
 
   reloadable_patch do
     User.class_eval do
-      attr_accessor :aliased_staff_user
+      attr_accessor :aliased_user
 
       has_many :users_posts_links, class_name: "DiscourseStaffAlias::UsersPostsLink"
       has_many :users_post_revisions_links, class_name: "DiscourseStaffAlias::UsersPostRevisionsLink"
@@ -99,7 +99,7 @@ after_initialize do
           end
 
           alias_user = DiscourseStaffAlias.alias_user
-          alias_user.aliased_staff_user = existing_user
+          alias_user.aliased_user = existing_user
 
           controller.with_current_user(alias_user) do
             action.call
@@ -124,7 +124,7 @@ after_initialize do
           end
 
           alias_user = DiscourseStaffAlias.alias_user
-          alias_user.aliased_staff_user = existing_user
+          alias_user.aliased_user = existing_user
 
           controller.with_current_user(alias_user) do
             action.call
@@ -141,13 +141,13 @@ after_initialize do
   end
 
   on(:post_created) do |post, opts, user|
-    if user.aliased_staff_user
+    if user.aliased_user
       DiscourseStaffAlias::UsersPostsLink.create!(
-        user_id: user.aliased_staff_user.id,
+        user_id: user.aliased_user.id,
         post_id: post.id
       )
 
-      DraftSequence.next!(user.aliased_staff_user, opts[:draft_key] || post.topic.draft_key)
+      DraftSequence.next!(user.aliased_user, opts[:draft_key] || post.topic.draft_key)
     end
   end
 
@@ -164,19 +164,19 @@ after_initialize do
   on(:post_edited) do |post, _topic_changed, revisor|
     if revisor.post_revision&.user_id == SiteSetting.get(:staff_alias_user_id) &&
        (editor = revisor.instance_variable_get(:@editor)) &&
-       editor.aliased_staff_user
+       editor.aliased_user
 
       DiscourseStaffAlias::UsersPostRevisionsLink.create!(
-        user_id: editor.aliased_staff_user.id,
+        user_id: editor.aliased_user.id,
         post_revision_id: revisor.post_revision.id
       )
 
-      DraftSequence.next!(editor.aliased_staff_user, post.topic.draft_key)
+      DraftSequence.next!(editor.aliased_user, post.topic.draft_key)
     end
   end
 
-  add_to_class(:topic_view, :aliased_staff_posts_usernames) do
-    @aliased_staff_posts_usernames ||= begin
+  add_to_class(:topic_view, :aliased_posts_usernames) do
+    @aliased_posts_usernames ||= begin
       post_ids = []
 
       posts.each do |post|
@@ -206,13 +206,13 @@ after_initialize do
     object.user_id == SiteSetting.get(:staff_alias_user_id)
   end
 
-  add_to_serializer(:post, :include_aliased_staff_username?, false) do
+  add_to_serializer(:post, :include_aliased_username?, false) do
     include_is_staff_aliased?
   end
 
-  add_to_serializer(:post, :aliased_staff_username, false) do
+  add_to_serializer(:post, :aliased_username, false) do
     if @topic_view.present?
-      @topic_view.aliased_staff_posts_usernames[object.id]
+      @topic_view.aliased_posts_usernames[object.id]
     else
       User.joins("INNER JOIN discourse_staff_alias_users_posts_links ON discourse_staff_alias_users_posts_links.user_id = users.id")
         .where("discourse_staff_alias_users_posts_links.post_id = ?", object.id)
@@ -230,13 +230,13 @@ after_initialize do
     object.user_id == SiteSetting.get(:staff_alias_user_id)
   end
 
-  add_to_serializer(:post_revision, :include_aliased_staff_username?, false) do
+  add_to_serializer(:post_revision, :include_aliased_username?, false) do
     DiscourseStaffAlias.enabled? &&
       DiscourseStaffAlias.user_allowed?(scope.current_user) &&
       object.user_id == SiteSetting.get(:staff_alias_user_id)
   end
 
-  add_to_serializer(:post_revision, :aliased_staff_username, false) do
+  add_to_serializer(:post_revision, :aliased_username, false) do
     User.joins("INNER JOIN discourse_staff_alias_users_post_revisions_links ON discourse_staff_alias_users_post_revisions_links.user_id = users.id")
       .where("discourse_staff_alias_users_post_revisions_links.post_revision_id = ?", object.id)
       .pluck_first(:username)
