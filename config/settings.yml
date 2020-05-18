@@ -10,3 +10,7 @@ plugins:
     default: ""
     client: true
     validator: "DiscourseStaffAlias::UsernameValidator"
+  staff_alias_allowed_groups:
+    default: "3"
+    client: true
+    type: group_list

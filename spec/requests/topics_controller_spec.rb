@@ -3,8 +3,19 @@
 require 'rails_helper'
 
 describe PostsController do
-  fab!(:user) { Fabricate(:user) }
-  fab!(:moderator) { Fabricate(:moderator) }
+  fab!(:group) { Fabricate(:group) }
+
+  fab!(:user) do
+    user = Fabricate(:user, trust_level: TrustLevel.levels[:regular])
+    group.add(user)
+    user
+  end
+
+  fab!(:moderator) do
+    user = Fabricate(:moderator)
+    Group.find(Group::AUTO_GROUPS[:staff]).add(user)
+    user
+  end
 
   let(:post_1) do
     alias_user = DiscourseStaffAlias.alias_user
@@ -49,7 +60,8 @@ describe PostsController do
     end
 
     it "should revise topic title as staff alias user for a topic created by staff alias user" do
-      sign_in(moderator)
+      sign_in(user)
+      SiteSetting.set(:staff_alias_allowed_groups, "#{Group::AUTO_GROUPS[:staff]}|#{group.id}")
 
       expect do
         put "/t/#{topic.slug}/#{topic.id}.json", params: {
@@ -63,7 +75,7 @@ describe PostsController do
       expect(topic.reload.title).to eq("Brand new title")
 
       expect(DiscourseStaffAlias::UsersPostRevisionsLink.exists?(
-        user: moderator,
+        user: user,
         post_revision: post_1.post_revisions.last
       )).to eq(true)
     end

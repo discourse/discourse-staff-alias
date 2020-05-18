@@ -6,7 +6,7 @@ import { REPLY, EDIT, CREATE_TOPIC } from "discourse/models/composer";
 function initialize(api) {
   const currentUser = api.getCurrentUser();
 
-  if (currentUser && currentUser.staff) {
+  if (currentUser && currentUser.can_act_as_staff_alias) {
     api.modifySelectKit("composer-actions").prependContent(component => {
       if (component.action === CREATE_TOPIC) {
         return [

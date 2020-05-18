@@ -55,6 +55,13 @@ after_initialize do
 
       has_many :users_posts_links, class_name: "DiscourseStaffAlias::UsersPostsLink"
       has_many :users_post_revisions_links, class_name: "DiscourseStaffAlias::UsersPostRevisionsLink"
+
+      def can_post_as_staff_alias
+        @can_post_as_staff_alias ||= begin
+          allowed_group_ids = SiteSetting.staff_alias_allowed_groups.split("|")
+          GroupUser.exists?(user_id: self.id, group_id: allowed_group_ids)
+        end
+      end
     end
 
     module WithCurrentUser
@@ -86,7 +93,10 @@ after_initialize do
           (params = controller.params)["as_staff_alias"]
 
           existing_user = controller.current_user
-          raise Discourse::InvalidAccess if !existing_user.staff?
+
+          if !DiscourseStaffAlias.user_allowed?(existing_user)
+            raise Discourse::InvalidAccess
+          end
 
           alias_user = DiscourseStaffAlias.alias_user
           alias_user.aliased_staff_user = existing_user
@@ -108,7 +118,10 @@ after_initialize do
            (params = controller.params).dig(*DiscourseStaffAlias::CONTROLLER_PARAMS[action_name]) == "true"
 
           existing_user = controller.current_user
-          raise Discourse::InvalidAccess if !existing_user.staff? || params[:whisper]
+
+          if !DiscourseStaffAlias.user_allowed?(existing_user) || params[:whisper]
+            raise Discourse::InvalidAccess
+          end
 
           alias_user = DiscourseStaffAlias.alias_user
           alias_user.aliased_staff_user = existing_user
@@ -184,8 +197,8 @@ after_initialize do
   end
 
   add_to_serializer(:post, :include_is_staff_aliased?, false) do
-    SiteSetting.staff_alias_enabled &&
-      scope.current_user&.staff? &&
+    DiscourseStaffAlias.enabled? &&
+      DiscourseStaffAlias.user_allowed?(scope.current_user) &&
       object.user_id == SiteSetting.get(:staff_alias_user_id)
   end
 
@@ -208,8 +221,8 @@ after_initialize do
   end
 
   add_to_serializer(:post_revision, :include_is_staff_aliased?, false) do
-    SiteSetting.staff_alias_enabled &&
-      scope.current_user&.staff? &&
+    DiscourseStaffAlias.enabled? &&
+      DiscourseStaffAlias.user_allowed?(scope.current_user) &&
       object.user_id == SiteSetting.get(:staff_alias_user_id)
   end
 
@@ -218,8 +231,8 @@ after_initialize do
   end
 
   add_to_serializer(:post_revision, :include_aliased_staff_username?, false) do
-    SiteSetting.staff_alias_enabled &&
-      scope.current_user&.staff? &&
+    DiscourseStaffAlias.enabled? &&
+      DiscourseStaffAlias.user_allowed?(scope.current_user) &&
       object.user_id == SiteSetting.get(:staff_alias_user_id)
   end
 
@@ -229,12 +242,21 @@ after_initialize do
       .pluck_first(:username)
   end
 
+  add_to_serializer(:current_user, :include_can_act_as_staff_alias?, false) do
+    DiscourseStaffAlias.enabled? && DiscourseStaffAlias.user_allowed?(scope.current_user)
+  end
+
+  add_to_serializer(:current_user, :can_act_as_staff_alias, false) do
+    DiscourseStaffAlias.user_allowed?(scope.current_user)
+  end
+
+
   class StaffAliasUserSerializer < BasicUserSerializer
     attributes :moderator
   end
 
   add_to_serializer(:topic_view, :include_staff_alias_user?, false) do
-    SiteSetting.staff_alias_enabled && scope.current_user&.staff?
+    DiscourseStaffAlias.enabled? && DiscourseStaffAlias.user_allowed?(scope.current_user)
   end
 
   add_to_serializer(:topic_view, :staff_alias_user, false) do

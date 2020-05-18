@@ -23,6 +23,11 @@ module DiscourseStaffAlias
     SiteSetting.staff_alias_enabled
   end
 
+  def self.user_allowed?(user)
+    return false if user.blank?
+    user.can_post_as_staff_alias
+  end
+
   def self.alias_user
     User.find_by(id: SiteSetting.staff_alias_user_id)
   end

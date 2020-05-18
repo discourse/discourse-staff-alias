@@ -7,7 +7,11 @@ describe TopicViewSerializer do
 
   let!(:post) { Fabricate(:post, user_id: SiteSetting.get(:staff_alias_user_id)) }
 
-  fab!(:moderator) { Fabricate(:moderator) }
+  fab!(:moderator) do
+    user = Fabricate(:moderator)
+    Group.find(Group::AUTO_GROUPS[:staff]).add(user)
+    user
+  end
 
   before do
     SiteSetting.set(:staff_alias_username, 'some_alias')

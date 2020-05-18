@@ -4,7 +4,13 @@ require 'rails_helper'
 
 describe PostsController do
   fab!(:user) { Fabricate(:user) }
-  fab!(:moderator) { Fabricate(:moderator) }
+
+  fab!(:moderator) do
+    user = Fabricate(:moderator)
+    Group.find(Group::AUTO_GROUPS[:staff]).add(user)
+    user
+  end
+
   fab!(:post_1) { Fabricate(:post, user: moderator) }
 
   before do

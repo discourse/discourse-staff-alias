@@ -3,13 +3,17 @@
 require 'rails_helper'
 
 describe PostSerializer do
-  fab!(:user) { Fabricate(:moderator) }
+  fab!(:moderator) do
+    user = Fabricate(:moderator)
+    Group.find(Group::AUTO_GROUPS[:staff]).add(user)
+    user
+  end
 
   let(:post) do
     post = Fabricate(:post, user: DiscourseStaffAlias.alias_user)
 
     DiscourseStaffAlias::UsersPostsLink.create!(
-      user: user,
+      user: moderator,
       post: post,
     )
 
@@ -26,7 +30,7 @@ describe PostSerializer do
   describe '#is_staff_aliased' do
     it 'should be true if post is created by staff alias user' do
       serializer = PostSerializer.new(post,
-        scope: Guardian.new(user),
+        scope: Guardian.new(moderator),
         root: false
       )
 
@@ -41,7 +45,7 @@ describe PostSerializer do
       SiteSetting.set(:staff_alias_enabled, false)
 
       payload = PostSerializer.new(post,
-        scope: Guardian.new(user),
+        scope: Guardian.new(moderator),
         root: false
       ).as_json
 
@@ -50,7 +54,7 @@ describe PostSerializer do
 
     it 'should not be included if post is not created by staff alias user' do
       payload = PostSerializer.new(post2,
-        scope: Guardian.new(user),
+        scope: Guardian.new(moderator),
         root: false
       ).as_json
 
@@ -63,7 +67,7 @@ describe PostSerializer do
         root: false
       )
 
-      serializer.topic_view = TopicView.new(post.topic_id, user)
+      serializer.topic_view = TopicView.new(post.topic_id, moderator)
       payload = serializer.as_json
 
       expect(payload[:aliased_staff_username]).to eq(nil)
@@ -71,23 +75,23 @@ describe PostSerializer do
 
     it 'should be included if post is created by staff alias user with topic view' do
       serializer = PostSerializer.new(post,
-        scope: Guardian.new(user),
+        scope: Guardian.new(moderator),
         root: false
       )
 
-      serializer.topic_view = TopicView.new(post.topic_id, user)
+      serializer.topic_view = TopicView.new(post.topic_id, moderator)
       payload = serializer.as_json
 
-      expect(payload[:aliased_staff_username]).to eq(user.username)
+      expect(payload[:aliased_staff_username]).to eq(moderator.username)
     end
 
     it 'should be included if post is created by staff alias user without topic view' do
       payload = PostSerializer.new(post,
-        scope: Guardian.new(user),
+        scope: Guardian.new(moderator),
         root: false
       ).as_json
 
-      expect(payload[:aliased_staff_username]).to eq(user.username)
+      expect(payload[:aliased_staff_username]).to eq(moderator.username)
     end
   end
 end

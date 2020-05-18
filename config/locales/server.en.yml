@@ -2,6 +2,7 @@ en:
   site_settings:
     staff_alias_enabled: "Enable discourse-staff-alias plugin"
     staff_alias_username: "Username of the alias user"
+    staff_alias_allowed_groups: "Groups that are allowed to post as staff alias user"
     errors:
       staff_alias_username_not_set: "You cannot enable discourse-staff-alias unless you've configured 'staff_alias_username'."
   post_revisions:
