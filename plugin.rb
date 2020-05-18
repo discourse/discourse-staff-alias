@@ -161,6 +161,16 @@ after_initialize do
     end
   end
 
+  on(:before_create_notification) do |user, type, post, opts|
+    if type == Notification.types[:liked] && user.id == SiteSetting.get(:staff_alias_user_id)
+      user = User.joins("INNER JOIN discourse_staff_alias_users_posts_links ON discourse_staff_alias_users_posts_links.user_id = users.id")
+        .where("discourse_staff_alias_users_posts_links.post_id = ?", post.id)
+        .first
+
+      PostAlerter.new.create_notification(user, type, post, opts) if user
+    end
+  end
+
   add_model_callback(PostRevision, :validate) do
     if self.user_id == SiteSetting.get(:staff_alias_user_id)
       if self.post.post_type == Post.types[:whisper]
