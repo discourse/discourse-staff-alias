@@ -1,8 +1,8 @@
 {{#if model.is_staff_aliased}}
   <div class="aliased-staff-user-details">
-    {{#if model.aliased_staff_username}}
-      {{#link-to "user" model.aliased_staff_username title=(i18n "discourse_staff_alias.post_revision_icon_title" username=model.aliased_staff_username)}}
-        <span>({{d-icon "user-secret"}} {{model.aliased_staff_username}})</span>
+    {{#if model.aliased_username}}
+      {{#link-to "user" model.aliased_username title=(i18n "discourse_staff_alias.post_revision_icon_title" username=model.aliased_username)}}
+        <span>({{d-icon "user-secret"}} {{model.aliased_username}})</span>
       {{/link-to}}
     {{else}}
       <span>({{d-icon "user-secret"}} {{i18n "discourse_staff_alias.aliased_user_deleted"}})</span>

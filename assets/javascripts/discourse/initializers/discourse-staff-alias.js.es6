@@ -116,7 +116,7 @@ function initialize(api) {
     api.serializeOnUpdate("as_staff_alias", "isReplyAsStaffAlias");
     api.serializeToTopic("as_staff_alias", "isReplyAsStaffAlias");
 
-    api.includePostAttributes("aliased_staff_username");
+    api.includePostAttributes("aliased_username");
     api.includePostAttributes("is_staff_aliased");
 
     api.addPosterIcon((cfs, attrs) => {
@@ -126,14 +126,14 @@ function initialize(api) {
           className: "user-title"
         };
 
-        if (attrs.aliased_staff_username) {
-          props.text = attrs.aliased_staff_username;
+        if (attrs.aliased_username) {
+          props.text = attrs.aliased_username;
 
           props.title = I18n.t("discourse_staff_alias.poster_icon_title", {
-            username: attrs.aliased_staff_username
+            username: attrs.aliased_username
           });
 
-          props.url = `/u/${attrs.aliased_staff_username}`;
+          props.url = `/u/${attrs.aliased_username}`;
         } else {
           props.text = I18n.t("discourse_staff_alias.aliased_user_deleted");
         }
