@@ -1,6 +1,6 @@
-# discourse-staff-alias
+# Discourse Staff Alias
 
-discourse-staff-alias is a plugin for ...
+This plugin allows user to post or edited a post as a staff alias user.
 
 ## Installation
 
@@ -9,6 +9,9 @@ how-to from the official Discourse Meta, using `git clone https://github.com/dis
 as the plugin command.
 
 ## Usage
+
+1. Configure `SiteSetting.staff_alias_username`
+1. Enable `SiteSetting.staff_alias_enabled`
 
 ## Feedback
 
