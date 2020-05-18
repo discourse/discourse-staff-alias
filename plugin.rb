@@ -250,7 +250,6 @@ after_initialize do
     DiscourseStaffAlias.user_allowed?(scope.current_user)
   end
 
-
   class StaffAliasUserSerializer < BasicUserSerializer
     attributes :moderator
   end
