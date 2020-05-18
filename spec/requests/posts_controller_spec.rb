@@ -115,6 +115,9 @@ describe PostsController do
         user_id: moderator.id,
         post_id: post.id,
       )).to eq(true)
+
+      expect(TopicUser.get(post.topic, moderator).notification_level)
+        .to eq(TopicUser.notification_levels[:watching])
     end
   end
 

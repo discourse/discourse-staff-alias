@@ -148,6 +148,16 @@ after_initialize do
       )
 
       DraftSequence.next!(user.aliased_user, opts[:draft_key] || post.topic.draft_key)
+
+      if !TopicUser.exists?(
+        user_id: user.aliased_user.id,
+        topic_id: post.topic_id,
+        notification_level: TopicUser.notification_levels[:watching]
+      )
+        TopicUser.change(user.aliased_user.id, post.topic_id,
+          notification_level: TopicUser.notification_levels[:watching]
+        )
+      end
     end
   end
 
