@@ -21,8 +21,6 @@ function initialize(api) {
             id: "toggle_reply_as_staff_alias"
           }
         ];
-      } else {
-        [];
       }
     });
 
@@ -46,8 +44,6 @@ function initialize(api) {
             id: "toggle_reply_as_staff_alias"
           }
         ];
-      } else {
-        [];
       }
     });
 
