@@ -1,5 +1,5 @@
 import selectKit from "helpers/select-kit-helper";
-import { acceptance } from "helpers/qunit-helpers";
+import { acceptance, updateCurrentUser } from "helpers/qunit-helpers";
 import { _clearSnapshots } from "select-kit/components/composer-actions";
 
 acceptance("Discourse Staff Alias", {
@@ -14,6 +14,7 @@ acceptance("Discourse Staff Alias", {
 });
 
 QUnit.test("creating topic", async assert => {
+  updateCurrentUser({ can_act_as_staff_alias: true });
   const composerActions = selectKit(".composer-actions");
 
   await visit("/");
@@ -29,6 +30,7 @@ QUnit.test("creating topic", async assert => {
 });
 
 QUnit.test("creating post", async assert => {
+  updateCurrentUser({ can_act_as_staff_alias: true });
   const composerActions = selectKit(".composer-actions");
 
   await visit("/t/internationalization-localization/280");
@@ -44,6 +46,7 @@ QUnit.test("creating post", async assert => {
 });
 
 QUnit.test("editing post", async assert => {
+  updateCurrentUser({ can_act_as_staff_alias: true });
   const composerActions = selectKit(".composer-actions");
 
   await visit("/t/internationalization-localization/280");
