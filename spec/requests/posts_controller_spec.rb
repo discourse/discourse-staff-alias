@@ -86,7 +86,6 @@ describe PostsController do
         expect(response.status).to eq(200)
       end.to change { alias_user.posts.count }.by(1)
         .and change { Draft.where(user_id: moderator.id).count }.by(-1)
-        .and change { DraftSequence.count }.by(1)
         .and change { DraftSequence.exists?(user_id: moderator.id, draft_key: post_1.topic.draft_key) }.from(false).to(true)
     end
 

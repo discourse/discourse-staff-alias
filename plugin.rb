@@ -136,10 +136,6 @@ after_initialize do
     end
   end
 
-  register_ignore_draft_sequence_callback do |user_id|
-    user_id == SiteSetting.get(:staff_alias_user_id)
-  end
-
   on(:post_created) do |post, opts, user|
     if user.aliased_user
       DiscourseStaffAlias::UsersPostsLink.create!(
