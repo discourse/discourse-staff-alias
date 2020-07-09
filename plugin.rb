@@ -172,7 +172,7 @@ after_initialize do
       if self.post.post_type == Post.types[:whisper]
         self.errors.add(:base, I18n.t("post_revisions.errors.cannot_edit_whisper_as_staff_alias"))
       end
-    elsif self.post.user_id == SiteSetting.get(:staff_alias_user_id)
+    elsif self.post.user_id == SiteSetting.get(:staff_alias_user_id) && User.human_user_id?(self.user_id)
       self.errors.add(:base, I18n.t("post_revisions.errors.cannot_edit_aliased_post_as_staff"))
     end
   end

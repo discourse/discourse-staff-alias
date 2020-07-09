@@ -20,4 +20,14 @@ describe PostRevision do
       post_revision_id: post_revision.id
     )).to eq(false)
   end
+
+  it 'allows non human users to edit posts made by the staff alias user' do
+    SiteSetting.set(:staff_alias_username, 'staff_alias_user')
+    SiteSetting.set(:staff_alias_enabled, true)
+
+    post = Fabricate(:post, user: User.find(SiteSetting.get(:staff_alias_user_id)))
+    post_revision = Fabricate.build(:post_revision, post: post, user: Discourse.system_user)
+
+    expect(post_revision.valid?).to eq(true)
+  end
 end
