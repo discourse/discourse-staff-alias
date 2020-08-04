@@ -8,10 +8,10 @@ span.poster-icon .d-icon {
 
 .aliased-staff-user-details {
   display: inline;
-  color: $primary-medium;
+  color: var(--primary-medium, $primary-medium);
 
   a,
   a:visited {
-    color: $primary-medium;
+    color: var(--primary-medium, $primary-medium);
   }
 }
