@@ -6,14 +6,14 @@ acceptance("Discourse Staff Alias", {
   loggedIn: true,
   settings: {
     enable_whispers: true,
-    staff_alias_enabled: true
+    staff_alias_enabled: true,
   },
   beforeEach() {
     _clearSnapshots();
-  }
+  },
 });
 
-QUnit.test("creating topic", async assert => {
+QUnit.test("creating topic", async (assert) => {
   updateCurrentUser({ can_act_as_staff_alias: true });
   const composerActions = selectKit(".composer-actions");
 
@@ -29,7 +29,7 @@ QUnit.test("creating topic", async assert => {
   );
 });
 
-QUnit.test("creating post", async assert => {
+QUnit.test("creating post", async (assert) => {
   updateCurrentUser({ can_act_as_staff_alias: true });
   const composerActions = selectKit(".composer-actions");
 
@@ -45,7 +45,7 @@ QUnit.test("creating post", async assert => {
   );
 });
 
-QUnit.test("editing post", async assert => {
+QUnit.test("editing post", async (assert) => {
   updateCurrentUser({ can_act_as_staff_alias: true });
   const composerActions = selectKit(".composer-actions");
 

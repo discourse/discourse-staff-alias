@@ -7,7 +7,7 @@ function initialize(api) {
   const currentUser = api.getCurrentUser();
 
   if (currentUser && currentUser.can_act_as_staff_alias) {
-    api.modifySelectKit("composer-actions").prependContent(component => {
+    api.modifySelectKit("composer-actions").prependContent((component) => {
       if (component.action === CREATE_TOPIC) {
         return [
           {
@@ -18,13 +18,13 @@ function initialize(api) {
               "composer.composer_actions.as_staff_alias.create_topic.desc"
             ),
             icon: "user-secret",
-            id: "toggle_reply_as_staff_alias"
-          }
+            id: "toggle_reply_as_staff_alias",
+          },
         ];
       }
     });
 
-    api.modifySelectKit("composer-actions").appendContent(component => {
+    api.modifySelectKit("composer-actions").appendContent((component) => {
       if (
         component.action === REPLY ||
         (component.action === EDIT &&
@@ -41,8 +41,8 @@ function initialize(api) {
               `composer.composer_actions.as_staff_alias.${component.action}.desc`
             ),
             icon: "user-secret",
-            id: "toggle_reply_as_staff_alias"
-          }
+            id: "toggle_reply_as_staff_alias",
+          },
         ];
       }
     });
@@ -56,7 +56,7 @@ function initialize(api) {
       toggleWhisperSelected(options, model) {
         this._super(...arguments);
         if (model.replyAsStaffAlias) model.set("replyAsStaffAlias", false);
-      }
+      },
     });
 
     api.modifyClass("model:composer", {
@@ -66,7 +66,7 @@ function initialize(api) {
       _updateUser() {
         if (this.isReplyAsStaffAlias) {
           const props = {
-            _presenceStaffOnly: true
+            _presenceStaffOnly: true,
           };
 
           if (this.topic) {
@@ -77,7 +77,7 @@ function initialize(api) {
           this.setProperties(props);
         } else {
           const props = {
-            _presenceStaffOnly: false
+            _presenceStaffOnly: false,
           };
 
           if (this._originalUser) {
@@ -105,7 +105,7 @@ function initialize(api) {
         } else {
           return !whisper && replyAsStaffAlias;
         }
-      }
+      },
     });
 
     api.serializeOnCreate("as_staff_alias", "isReplyAsStaffAlias");
@@ -119,14 +119,14 @@ function initialize(api) {
       if (attrs.is_staff_aliased) {
         const props = {
           icon: "user-secret",
-          className: "user-title"
+          className: "user-title",
         };
 
         if (attrs.aliased_username) {
           props.text = attrs.aliased_username;
 
           props.title = I18n.t("discourse_staff_alias.poster_icon_title", {
-            username: attrs.aliased_username
+            username: attrs.aliased_username,
           });
 
           props.url = `/u/${attrs.aliased_username}`;
@@ -149,5 +149,5 @@ export default {
     if (siteSettings.staff_alias_enabled) {
       withPluginApi("0.10.0", initialize);
     }
-  }
+  },
 };
