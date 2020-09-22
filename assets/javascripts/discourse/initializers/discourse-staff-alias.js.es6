@@ -50,12 +50,16 @@ function initialize(api) {
     api.modifyClass("component:composer-actions", {
       toggleReplyAsStaffAliasSelected(options, model) {
         model.toggleProperty("replyAsStaffAlias");
-        if (model.whisper) model.set("whisper", false);
+        if (model.whisper) {
+          model.set("whisper", false);
+        }
       },
 
       toggleWhisperSelected(options, model) {
         this._super(...arguments);
-        if (model.replyAsStaffAlias) model.set("replyAsStaffAlias", false);
+        if (model.replyAsStaffAlias) {
+          model.set("replyAsStaffAlias", false);
+        }
       },
     });
 
