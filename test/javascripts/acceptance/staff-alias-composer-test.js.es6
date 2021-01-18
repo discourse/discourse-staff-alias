@@ -36,7 +36,7 @@ acceptance("Discourse Staff Alias", function (needs) {
     const composerActions = selectKit(".composer-actions");
 
     await visit("/t/internationalization-localization/280");
-    await click(".topic-timeline button.create");
+    await click("#topic-footer-buttons .create");
     await composerActions.expand();
 
     assert.equal(composerActions.rows().length, 5);
