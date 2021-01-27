@@ -1,7 +1,7 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
 import I18n from "I18n";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
-import { REPLY, EDIT, CREATE_TOPIC } from "discourse/models/composer";
+import { CREATE_TOPIC, EDIT, REPLY } from "discourse/models/composer";
 
 function initialize(api) {
   const currentUser = api.getCurrentUser();
