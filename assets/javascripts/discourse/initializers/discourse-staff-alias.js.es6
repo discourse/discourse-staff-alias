@@ -3,6 +3,8 @@ import I18n from "I18n";
 import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import { CREATE_TOPIC, EDIT, REPLY } from "discourse/models/composer";
 
+const PLUGIN_ID = "discourse-staff-alias";
+
 function initialize(api) {
   const currentUser = api.getCurrentUser();
 
@@ -48,6 +50,7 @@ function initialize(api) {
     });
 
     api.modifyClass("component:composer-actions", {
+      pluginId: PLUGIN_ID,
       toggleReplyAsStaffAliasSelected(options, model) {
         model.toggleProperty("replyAsStaffAlias");
         if (model.whisper) {
@@ -64,6 +67,7 @@ function initialize(api) {
     });
 
     api.modifyClass("model:composer", {
+      pluginId: PLUGIN_ID,
       replyAsStaffAlias: false,
 
       @observes("isReplyAsStaffAlias")
