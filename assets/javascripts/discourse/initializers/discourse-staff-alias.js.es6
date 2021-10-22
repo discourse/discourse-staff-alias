@@ -49,6 +49,30 @@ function initialize(api) {
       }
     });
 
+    api.modifyClass("component:composer-presence-display", {
+      @discourseComputed(
+        "model.replyingToTopic",
+        "model.editingPost",
+        "model.whisper",
+        "model.composerOpened",
+        "isDestroying",
+        "model.isReplyAsStaffAlias"
+      )
+      state(
+        replyingToTopic,
+        editingPost,
+        whisper,
+        composerOpen,
+        isDestroying,
+        isReplyAsStaffAlias
+      ) {
+        if (isReplyAsStaffAlias) {
+          return "whisper";
+        }
+        return this._super(...arguments);
+      },
+    });
+
     api.modifyClass("component:composer-actions", {
       pluginId: PLUGIN_ID,
       toggleReplyAsStaffAliasSelected(options, model) {
@@ -73,9 +97,7 @@ function initialize(api) {
       @observes("isReplyAsStaffAlias")
       _updateUser() {
         if (this.isReplyAsStaffAlias) {
-          const props = {
-            _presenceStaffOnly: true,
-          };
+          const props = {};
 
           if (this.topic) {
             props._originalUser = this.user;
@@ -84,9 +106,7 @@ function initialize(api) {
 
           this.setProperties(props);
         } else {
-          const props = {
-            _presenceStaffOnly: false,
-          };
+          const props = {};
 
           if (this._originalUser) {
             props.user = this.get("_originalUser");
