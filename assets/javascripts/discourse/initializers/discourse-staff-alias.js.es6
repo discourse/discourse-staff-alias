@@ -50,6 +50,8 @@ function initialize(api) {
     });
 
     api.modifyClass("component:composer-presence-display", {
+      pluginId: PLUGIN_ID,
+
       @discourseComputed(
         "model.replyingToTopic",
         "model.editingPost",
@@ -75,6 +77,7 @@ function initialize(api) {
 
     api.modifyClass("component:composer-actions", {
       pluginId: PLUGIN_ID,
+
       toggleReplyAsStaffAliasSelected(options, model) {
         model.toggleProperty("replyAsStaffAlias");
         if (model.whisper) {
