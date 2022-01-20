@@ -28,11 +28,12 @@ function initialize(api) {
 
     api.modifySelectKit("composer-actions").appendContent((component) => {
       if (
-        component.action === REPLY ||
-        (component.action === EDIT &&
-          component.get("post.post_type") !==
-            component.get("site.post_types.whisper") &&
-          !component.get("post.is_staff_aliased"))
+        component.topic?.details?.staff_alias_can_create_post &&
+        (component.action === REPLY ||
+          (component.action === EDIT &&
+            component.get("post.post_type") !==
+              component.get("site.post_types.whisper") &&
+            !component.get("post.is_staff_aliased")))
       ) {
         return [
           {
