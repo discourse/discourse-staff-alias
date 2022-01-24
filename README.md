@@ -1,6 +1,8 @@
-# Discourse Staff Alias
+# Discourse - Staff Alias Plugin
 
-This plugin allows user to post or edited a post as a staff alias user.
+This plugin allows a user to post or edit a post as a staff alias user, by being in a group.
+
+For example: allowing all users in the "support" group to post as "support_user".
 
 ## Installation
 
@@ -10,8 +12,8 @@ as the plugin command.
 
 ## Usage
 
-1. Configure `SiteSetting.staff_alias_username`
-1. Enable `SiteSetting.staff_alias_enabled`
+1. Configure `SiteSetting.staff_alias_username` and `SiteSetting.staff_alias_allowed_groups`
+3. Enable `SiteSetting.staff_alias_enabled`
 
 ## Feedback
 
