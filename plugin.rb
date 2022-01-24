@@ -173,7 +173,11 @@ after_initialize do
         self.errors.add(:base, I18n.t("post_revisions.errors.cannot_edit_whisper_as_staff_alias"))
       end
     elsif self.post.user_id == SiteSetting.get(:staff_alias_user_id) && User.human_user_id?(self.user_id)
-      self.errors.add(:base, I18n.t("post_revisions.errors.cannot_edit_aliased_post_as_staff"))
+      if (self.modifications.keys & ["wiki", "post_type"]).present? && DiscourseStaffAlias.user_allowed?(self.user)
+        self.user_id = SiteSetting.get(:staff_alias_user_id)
+      else
+        self.errors.add(:base, I18n.t("post_revisions.errors.cannot_edit_aliased_post_as_staff"))
+      end
     end
   end
 
