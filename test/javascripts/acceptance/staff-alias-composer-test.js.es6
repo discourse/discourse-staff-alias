@@ -7,30 +7,46 @@ import { _clearSnapshots } from "select-kit/components/composer-actions";
 import { presentUserIds } from "discourse/tests/helpers/presence-pretender";
 import User from "discourse/models/user";
 import topicFixtures from "discourse/tests/fixtures/topic";
+import { cloneJSON } from "discourse-common/lib/object";
 import { skip, test } from "qunit";
 
 const discoursePresenceInstalled = Object.keys(requirejs.entries).any((name) =>
   name.includes("/discourse-presence/")
 );
 const testIfPresenceInstalled = discoursePresenceInstalled ? test : skip;
+let staffAliasCanCreatePost = true;
 
 acceptance("Discourse Staff Alias", function (needs) {
   needs.user();
+
   needs.settings({
     enable_whispers: true,
     staff_alias_enabled: true,
   });
+
   needs.hooks.beforeEach(() => {
     _clearSnapshots();
   });
 
-  const topicResponse = topicFixtures["/t/280/1.json"];
-  topicResponse["staff_alias_user"] = {
-    id: -1,
-    username: "system",
-    avatar_template: "/a/b/c.jpg",
-    moderator: false,
-  };
+  needs.hooks.afterEach(() => {
+    staffAliasCanCreatePost = true;
+  });
+
+  needs.pretender((server, helper) => {
+    const topicResponse = cloneJSON(topicFixtures["/t/280/1.json"]);
+
+    topicResponse.staff_alias_user = {
+      id: -1,
+      username: "system",
+      avatar_template: "/a/b/c.jpg",
+      moderator: false,
+    };
+
+    server.get("/t/280.json", () => {
+      topicResponse.details.staff_alias_can_create_post = staffAliasCanCreatePost;
+      return helper.response(topicResponse);
+    });
+  });
 
   test("creating topic", async (assert) => {
     updateCurrentUser({ can_act_as_staff_alias: true });
@@ -62,6 +78,18 @@ acceptance("Discourse Staff Alias", function (needs) {
       composerActions.rowByIndex(4).value(),
       "toggle_reply_as_staff_alias"
     );
+  });
+
+  test("creating post when staff alias user can not create post in given topic", async (assert) => {
+    updateCurrentUser({ can_act_as_staff_alias: true });
+    staffAliasCanCreatePost = false;
+
+    await visit("/t/internationalization-localization/280");
+    await click("#topic-footer-buttons .create");
+    const composerActions = selectKit(".composer-actions");
+    await composerActions.expand();
+
+    assert.equal(composerActions.rows().length, 4);
   });
 
   testIfPresenceInstalled(

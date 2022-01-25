@@ -277,4 +277,8 @@ after_initialize do
   add_to_serializer(:topic_view, :staff_alias_user, false) do
     StaffAliasUserSerializer.new(DiscourseStaffAlias.alias_user, root: false).as_json
   end
+
+  add_to_serializer("TopicViewDetails", :staff_alias_can_create_post, false) do
+    Guardian.new(DiscourseStaffAlias.alias_user).can_create?(Post, object.topic)
+  end
 end
