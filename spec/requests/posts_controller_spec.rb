@@ -279,4 +279,70 @@ describe PostsController do
       )).to eq(true)
     end
   end
+
+  describe '#wiki' do
+    it 'allows users in staff aliased allowed group to update wiki status of post made by staff alias user' do
+      sign_in(moderator)
+
+      post "/posts.json", params: {
+        raw: 'this is a post',
+        topic_id: post_1.topic_id,
+        reply_to_post_number: 1,
+        as_staff_alias: true
+      }
+
+      expect(response.status).to eq(200)
+
+      new_post = Post.last
+
+      expect(new_post.user).to eq(DiscourseStaffAlias.alias_user)
+
+      SiteSetting.set(:editing_grace_period, 0)
+
+      expect do
+        put "/posts/#{new_post.id}/wiki.json", params: { wiki: "true" }
+
+        expect(response.status).to eq(200)
+      end.to change { PostRevision.count }.by(1)
+
+      post_revision = PostRevision.last
+
+      expect(post_revision.post_id).to eq(new_post.id)
+      expect(post_revision.user_id).to eq(DiscourseStaffAlias.alias_user.id)
+      expect(post_revision.modifications).to eq("wiki" => [false, true])
+    end
+  end
+
+  describe '#post_type' do
+    it 'allows users in staff aliased allowed group to update post_type of post made by staff alias user' do
+      sign_in(moderator)
+
+      post "/posts.json", params: {
+        raw: 'this is a post',
+        topic_id: post_1.topic_id,
+        reply_to_post_number: 1,
+        as_staff_alias: true
+      }
+
+      expect(response.status).to eq(200)
+
+      new_post = Post.last
+
+      expect(new_post.user).to eq(DiscourseStaffAlias.alias_user)
+
+      SiteSetting.set(:editing_grace_period, 0)
+
+      expect do
+        put "/posts/#{new_post.id}/post_type.json", params: { post_type: Post.types[:moderator_action] }
+
+        expect(response.status).to eq(200)
+      end.to change { PostRevision.count }.by(1)
+
+      post_revision = PostRevision.last
+
+      expect(post_revision.post_id).to eq(new_post.id)
+      expect(post_revision.user_id).to eq(DiscourseStaffAlias.alias_user.id)
+      expect(post_revision.modifications).to eq("post_type" => [Post.types[:regular], Post.types[:moderator_action]])
+    end
+  end
 end
