@@ -9,6 +9,7 @@ import User from "discourse/models/user";
 import topicFixtures from "discourse/tests/fixtures/topic";
 import { cloneJSON } from "discourse-common/lib/object";
 import { skip, test } from "qunit";
+import { click, fillIn, visit } from "@ember/test-helpers";
 
 const discoursePresenceInstalled = Object.keys(requirejs.entries).any((name) =>
   name.includes("/discourse-presence/")
