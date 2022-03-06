@@ -5,6 +5,7 @@
 # version: 0.1
 # authors: tgxworld
 # url: https://github.com/discourse/discourse-staff-alias
+# transpile_js: true
 
 enabled_site_setting :staff_alias_enabled
 
