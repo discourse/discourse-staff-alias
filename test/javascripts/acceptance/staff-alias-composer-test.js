@@ -49,7 +49,7 @@ acceptance("Discourse Staff Alias", function (needs) {
     });
   });
 
-  test("creating topic", async (assert) => {
+  test("creating topic", async function (assert) {
     updateCurrentUser({ can_act_as_staff_alias: true });
     const composerActions = selectKit(".composer-actions");
 
@@ -57,15 +57,15 @@ acceptance("Discourse Staff Alias", function (needs) {
     await click("button#create-topic");
     await composerActions.expand();
 
-    assert.equal(composerActions.rows().length, 3);
+    assert.strictEqual(composerActions.rows().length, 3);
 
-    assert.equal(
+    assert.strictEqual(
       composerActions.rowByIndex(0).value(),
       "toggle_reply_as_staff_alias"
     );
   });
 
-  test("creating post", async (assert) => {
+  test("creating post", async function (assert) {
     updateCurrentUser({ can_act_as_staff_alias: true });
     const composerActions = selectKit(".composer-actions");
 
@@ -73,15 +73,15 @@ acceptance("Discourse Staff Alias", function (needs) {
     await click("#topic-footer-buttons .create");
     await composerActions.expand();
 
-    assert.equal(composerActions.rows().length, 5);
+    assert.strictEqual(composerActions.rows().length, 5);
 
-    assert.equal(
+    assert.strictEqual(
       composerActions.rowByIndex(4).value(),
       "toggle_reply_as_staff_alias"
     );
   });
 
-  test("creating post when staff alias user can not create post in given topic", async (assert) => {
+  test("creating post when staff alias user can not create post in given topic", async function (assert) {
     updateCurrentUser({ can_act_as_staff_alias: true });
     staffAliasCanCreatePost = false;
 
@@ -90,12 +90,12 @@ acceptance("Discourse Staff Alias", function (needs) {
     const composerActions = selectKit(".composer-actions");
     await composerActions.expand();
 
-    assert.equal(composerActions.rows().length, 4);
+    assert.strictEqual(composerActions.rows().length, 4);
   });
 
   testIfPresenceInstalled(
     "uses whisper channel for presence",
-    async (assert) => {
+    async function (assert) {
       updateCurrentUser({ can_act_as_staff_alias: true });
       const composerActions = selectKit(".composer-actions");
 
@@ -127,7 +127,7 @@ acceptance("Discourse Staff Alias", function (needs) {
     }
   );
 
-  test("editing post", async (assert) => {
+  test("editing post", async function (assert) {
     updateCurrentUser({ can_act_as_staff_alias: true });
     const composerActions = selectKit(".composer-actions");
 
@@ -136,9 +136,9 @@ acceptance("Discourse Staff Alias", function (needs) {
     await click("article#post_1 button.edit");
     await composerActions.expand();
 
-    assert.equal(composerActions.rows().length, 2);
+    assert.strictEqual(composerActions.rows().length, 2);
 
-    assert.equal(
+    assert.strictEqual(
       composerActions.rowByIndex(1).value(),
       "toggle_reply_as_staff_alias"
     );
