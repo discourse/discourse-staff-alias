@@ -44,7 +44,8 @@ acceptance("Discourse Staff Alias", function (needs) {
     };
 
     server.get("/t/280.json", () => {
-      topicResponse.details.staff_alias_can_create_post = staffAliasCanCreatePost;
+      topicResponse.details.staff_alias_can_create_post =
+        staffAliasCanCreatePost;
       return helper.response(topicResponse);
     });
   });
