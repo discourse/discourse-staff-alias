@@ -1,8 +1,5 @@
 import selectKit from "discourse/tests/helpers/select-kit-helper";
-import {
-  acceptance,
-  updateCurrentUser,
-} from "discourse/tests/helpers/qunit-helpers";
+import { acceptance } from "discourse/tests/helpers/qunit-helpers";
 import { _clearSnapshots } from "select-kit/components/composer-actions";
 import { presentUserIds } from "discourse/tests/helpers/presence-pretender";
 import User from "discourse/models/user";
@@ -18,7 +15,7 @@ const testIfPresenceInstalled = discoursePresenceInstalled ? test : skip;
 let staffAliasCanCreatePost = true;
 
 acceptance("Discourse Staff Alias", function (needs) {
-  needs.user();
+  needs.user({ can_act_as_staff_alias: true });
 
   needs.settings({
     enable_whispers: true,
@@ -44,45 +41,43 @@ acceptance("Discourse Staff Alias", function (needs) {
     };
 
     server.get("/t/280.json", () => {
-      topicResponse.details.staff_alias_can_create_post = staffAliasCanCreatePost;
+      topicResponse.details.staff_alias_can_create_post =
+        staffAliasCanCreatePost;
       return helper.response(topicResponse);
     });
   });
 
-  test("creating topic", async (assert) => {
-    updateCurrentUser({ can_act_as_staff_alias: true });
+  test("creating topic", async function (assert) {
     const composerActions = selectKit(".composer-actions");
 
     await visit("/");
     await click("button#create-topic");
     await composerActions.expand();
 
-    assert.equal(composerActions.rows().length, 3);
+    assert.strictEqual(composerActions.rows().length, 3);
 
-    assert.equal(
+    assert.strictEqual(
       composerActions.rowByIndex(0).value(),
       "toggle_reply_as_staff_alias"
     );
   });
 
-  test("creating post", async (assert) => {
-    updateCurrentUser({ can_act_as_staff_alias: true });
+  test("creating post", async function (assert) {
     const composerActions = selectKit(".composer-actions");
 
     await visit("/t/internationalization-localization/280");
     await click("#topic-footer-buttons .create");
     await composerActions.expand();
 
-    assert.equal(composerActions.rows().length, 5);
+    assert.strictEqual(composerActions.rows().length, 5);
 
-    assert.equal(
+    assert.strictEqual(
       composerActions.rowByIndex(4).value(),
       "toggle_reply_as_staff_alias"
     );
   });
 
-  test("creating post when staff alias user can not create post in given topic", async (assert) => {
-    updateCurrentUser({ can_act_as_staff_alias: true });
+  test("creating post when staff alias user can not create post in given topic", async function (assert) {
     staffAliasCanCreatePost = false;
 
     await visit("/t/internationalization-localization/280");
@@ -90,13 +85,12 @@ acceptance("Discourse Staff Alias", function (needs) {
     const composerActions = selectKit(".composer-actions");
     await composerActions.expand();
 
-    assert.equal(composerActions.rows().length, 4);
+    assert.strictEqual(composerActions.rows().length, 4);
   });
 
   testIfPresenceInstalled(
     "uses whisper channel for presence",
-    async (assert) => {
-      updateCurrentUser({ can_act_as_staff_alias: true });
+    async function (assert) {
       const composerActions = selectKit(".composer-actions");
 
       await visit("/t/internationalization-localization/280");
@@ -127,8 +121,7 @@ acceptance("Discourse Staff Alias", function (needs) {
     }
   );
 
-  test("editing post", async (assert) => {
-    updateCurrentUser({ can_act_as_staff_alias: true });
+  test("editing post", async function (assert) {
     const composerActions = selectKit(".composer-actions");
 
     await visit("/t/internationalization-localization/280");
@@ -136,9 +129,9 @@ acceptance("Discourse Staff Alias", function (needs) {
     await click("article#post_1 button.edit");
     await composerActions.expand();
 
-    assert.equal(composerActions.rows().length, 2);
+    assert.strictEqual(composerActions.rows().length, 2);
 
-    assert.equal(
+    assert.strictEqual(
       composerActions.rowByIndex(1).value(),
       "toggle_reply_as_staff_alias"
     );
