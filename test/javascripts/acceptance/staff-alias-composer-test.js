@@ -1,8 +1,5 @@
 import selectKit from "discourse/tests/helpers/select-kit-helper";
-import {
-  acceptance,
-  updateCurrentUser,
-} from "discourse/tests/helpers/qunit-helpers";
+import { acceptance } from "discourse/tests/helpers/qunit-helpers";
 import { _clearSnapshots } from "select-kit/components/composer-actions";
 import { presentUserIds } from "discourse/tests/helpers/presence-pretender";
 import User from "discourse/models/user";
@@ -18,7 +15,7 @@ const testIfPresenceInstalled = discoursePresenceInstalled ? test : skip;
 let staffAliasCanCreatePost = true;
 
 acceptance("Discourse Staff Alias", function (needs) {
-  needs.user();
+  needs.user({ can_act_as_staff_alias: true });
 
   needs.settings({
     enable_whispers: true,
@@ -51,7 +48,6 @@ acceptance("Discourse Staff Alias", function (needs) {
   });
 
   test("creating topic", async function (assert) {
-    updateCurrentUser({ can_act_as_staff_alias: true });
     const composerActions = selectKit(".composer-actions");
 
     await visit("/");
@@ -67,7 +63,6 @@ acceptance("Discourse Staff Alias", function (needs) {
   });
 
   test("creating post", async function (assert) {
-    updateCurrentUser({ can_act_as_staff_alias: true });
     const composerActions = selectKit(".composer-actions");
 
     await visit("/t/internationalization-localization/280");
@@ -83,7 +78,6 @@ acceptance("Discourse Staff Alias", function (needs) {
   });
 
   test("creating post when staff alias user can not create post in given topic", async function (assert) {
-    updateCurrentUser({ can_act_as_staff_alias: true });
     staffAliasCanCreatePost = false;
 
     await visit("/t/internationalization-localization/280");
@@ -97,7 +91,6 @@ acceptance("Discourse Staff Alias", function (needs) {
   testIfPresenceInstalled(
     "uses whisper channel for presence",
     async function (assert) {
-      updateCurrentUser({ can_act_as_staff_alias: true });
       const composerActions = selectKit(".composer-actions");
 
       await visit("/t/internationalization-localization/280");
@@ -129,7 +122,6 @@ acceptance("Discourse Staff Alias", function (needs) {
   );
 
   test("editing post", async function (assert) {
-    updateCurrentUser({ can_act_as_staff_alias: true });
     const composerActions = selectKit(".composer-actions");
 
     await visit("/t/internationalization-localization/280");
