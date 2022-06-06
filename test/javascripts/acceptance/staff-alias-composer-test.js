@@ -54,11 +54,8 @@ acceptance("Discourse Staff Alias", function (needs) {
     await click("button#create-topic");
     await composerActions.expand();
 
-    assert.strictEqual(composerActions.rows().length, 3);
-
-    assert.strictEqual(
-      composerActions.rowByIndex(0).value(),
-      "toggle_reply_as_staff_alias"
+    assert.ok(
+      composerActions.rowByValue("toggle_reply_as_staff_alias").exists()
     );
   });
 
@@ -69,11 +66,8 @@ acceptance("Discourse Staff Alias", function (needs) {
     await click("#topic-footer-buttons .create");
     await composerActions.expand();
 
-    assert.strictEqual(composerActions.rows().length, 5);
-
-    assert.strictEqual(
-      composerActions.rowByIndex(4).value(),
-      "toggle_reply_as_staff_alias"
+    assert.ok(
+      composerActions.rowByValue("toggle_reply_as_staff_alias").exists()
     );
   });
 
@@ -85,7 +79,9 @@ acceptance("Discourse Staff Alias", function (needs) {
     const composerActions = selectKit(".composer-actions");
     await composerActions.expand();
 
-    assert.strictEqual(composerActions.rows().length, 4);
+    assert.notOk(
+      composerActions.rowByValue("toggle_reply_as_staff_alias").exists()
+    );
   });
 
   testIfPresenceInstalled(
