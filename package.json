@@ -1,7 +1,10 @@
 {
+  "name": "discourse-staff-alias",
+  "version": "0.1.0",
+  "repository": "https://github.com/discourse/discourse-staff-alias",
   "author": "Discourse",
   "license": "MIT",
   "devDependencies": {
-    "eslint-config-discourse": "^3.0.0"
+    "eslint-config-discourse": "^3.1.0"
   }
 }
