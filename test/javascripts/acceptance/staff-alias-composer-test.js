@@ -18,7 +18,7 @@ acceptance("Discourse Staff Alias", function (needs) {
   needs.user({ can_act_as_staff_alias: true });
 
   needs.settings({
-    enable_whispers: true,
+    enable_whispers: "14",
     staff_alias_enabled: true,
   });
 
