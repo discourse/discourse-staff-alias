@@ -155,7 +155,7 @@ describe PostsController do
         expect(response.parsed_body["errors"].first).to eq(
           I18n.t("post_revisions.errors.cannot_edit_whisper_as_staff_alias")
         )
-      end.to change { post_1.post_revisions.count }.by(0)
+      end.not_to change { post_1.post_revisions.count }
     end
 
     it 'does not allow a post by the alias user to be edited as staff user' do
@@ -183,7 +183,7 @@ describe PostsController do
         expect(response.parsed_body["errors"].first).to eq(
           I18n.t("post_revisions.errors.cannot_edit_aliased_post_as_staff")
         )
-      end.to change { post_1.post_revisions.count }.by(0)
+      end.not_to change { post_1.post_revisions.count }
     end
 
     it 'advances the draft sequence for the staff user' do
