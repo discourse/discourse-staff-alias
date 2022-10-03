@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-describe "DiscourseStaffAlias plugin site settings" do
+describe SiteSetting do
   describe "enabled site setting" do
     it "raises the right error when trying to enable without setting the alias username" do
       expect { SiteSetting.set(:staff_alias_enabled, true) }
