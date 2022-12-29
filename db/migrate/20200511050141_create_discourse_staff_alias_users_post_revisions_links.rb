@@ -8,13 +8,16 @@ class CreateDiscourseStaffAliasUsersPostRevisionsLinks < ActiveRecord::Migration
       t.timestamps
     end
 
-    add_index(:discourse_staff_alias_users_post_revisions_links,
-      [:user_id, :post_revision_id],
-      name: 'idx_user_id_post_revision_id',
-      unique: true
+    add_index(
+      :discourse_staff_alias_users_post_revisions_links,
+      %i[user_id post_revision_id],
+      name: "idx_user_id_post_revision_id",
+      unique: true,
     )
 
     add_foreign_key :discourse_staff_alias_users_post_revisions_links, :users, column: :user_id
-    add_foreign_key :discourse_staff_alias_users_post_revisions_links, :post_revisions, column: :post_revision_id
+    add_foreign_key :discourse_staff_alias_users_post_revisions_links,
+                    :post_revisions,
+                    column: :post_revision_id
   end
 end
