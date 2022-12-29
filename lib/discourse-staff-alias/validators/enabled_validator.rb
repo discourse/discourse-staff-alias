@@ -5,9 +5,7 @@ class DiscourseStaffAlias::EnabledValidator
   end
 
   def valid_value?(val)
-    if val == 't'
-      return SiteSetting.staff_alias_user_id > 0
-    end
+    return SiteSetting.staff_alias_user_id > 0 if val == "t"
 
     true
   end

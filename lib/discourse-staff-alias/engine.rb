@@ -12,12 +12,9 @@ module DiscourseStaffAlias
     end
   end
 
-  CONTROLLER_PARAMS = {
-    "create" => [:as_staff_alias],
-    "update" => [:post, :as_staff_alias]
-  }
+  CONTROLLER_PARAMS = { "create" => [:as_staff_alias], "update" => %i[post as_staff_alias] }
 
-  CONTROLLER_ACTIONS = ["create", "update"]
+  CONTROLLER_ACTIONS = %w[create update]
 
   def self.enabled?
     SiteSetting.staff_alias_enabled
