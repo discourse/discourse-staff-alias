@@ -173,7 +173,7 @@ after_initialize do
       end
     elsif self.post.user_id == SiteSetting.get(:staff_alias_user_id) &&
           User.human_user_id?(self.user_id)
-      if (self.modifications.keys & %w[wiki post_type]).present? &&
+      if (self.modifications.keys & %w[wiki post_type user_id]).present? &&
            DiscourseStaffAlias.user_allowed?(self.user)
         self.user_id = SiteSetting.get(:staff_alias_user_id)
       else
@@ -183,7 +183,12 @@ after_initialize do
   end
 
   on(:post_edited) do |post, _topic_changed, revisor|
-    if revisor.post_revision&.user_id == SiteSetting.get(:staff_alias_user_id) &&
+    post_revision = revisor.post_revision
+    return if post_revision.nil?
+
+    alias_user_id = SiteSetting.get(:staff_alias_user_id)
+
+    if post_revision.user_id == SiteSetting.get(:staff_alias_user_id) &&
          (editor = revisor.instance_variable_get(:@editor)) && editor.aliased_user
       DiscourseStaffAlias::UsersPostRevisionsLink.create!(
         user_id: editor.aliased_user.id,
@@ -191,6 +196,14 @@ after_initialize do
       )
 
       DraftSequence.next!(editor.aliased_user, post.topic.draft_key)
+    end
+
+    if post_revision.modifications.keys.include? "user_id"
+      original_user_id, revised_user_id = post_revision.modifications["user_id"]
+
+      if revised_user_id == alias_user_id
+        DiscourseStaffAlias::UsersPostsLink.create!(user_id: original_user_id, post_id: post.id)
+      end
     end
   end
 
