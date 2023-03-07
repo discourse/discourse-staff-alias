@@ -93,7 +93,9 @@ describe PostRevision do
         :post_revision,
         post: post,
         user: DiscourseStaffAlias.alias_user,
-        modifications: { "user_id" => [user.id, DiscourseStaffAlias.alias_user.id] },
+        modifications: {
+          "user_id" => [user.id, DiscourseStaffAlias.alias_user.id],
+        },
       )
 
     expect(post_revision.valid?).to eq(true)
