@@ -86,19 +86,20 @@ describe PostRevision do
   end
 
   it "switches revision user to staff alias user when changing user_id of post to staff alias user" do
+    another_user = Fabricate(:user)
     post = Fabricate(:post, user: user, post_type: Post.types[:regular])
 
     post_revision =
       Fabricate.build(
         :post_revision,
         post: post,
-        user: DiscourseStaffAlias.alias_user,
+        user: another_user,
         modifications: {
           "user_id" => [user.id, DiscourseStaffAlias.alias_user.id],
         },
       )
 
     expect(post_revision.valid?).to eq(true)
-    expect(post_revision.user_id).to eq(SiteSetting.get(:staff_alias_user_id))
+    expect(post_revision.user_id).to eq(another_user.id)
   end
 end
