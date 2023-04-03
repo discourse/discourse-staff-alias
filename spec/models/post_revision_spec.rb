@@ -106,6 +106,7 @@ describe PostRevision do
   it "does not error out if no post revisions" do
     post = Fabricate(:post, user: user, post_type: Post.types[:regular])
     revisor = PostRevisor.new(post)
+    revisor.revise!(post.user, { raw: "post revisions should be made if there's an edit" })
 
     expect { DiscourseEvent.trigger(:post_edited, post, false, revisor) }.not_to raise_error
     expect { DiscourseEvent.trigger(:post_edited, post, false, revisor) }.not_to change {
