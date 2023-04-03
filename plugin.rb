@@ -184,7 +184,7 @@ after_initialize do
 
   on(:post_edited) do |post, _topic_changed, revisor|
     post_revision = revisor.post_revision
-    return if post_revision.nil?
+    next if post_revision.nil?
 
     alias_user_id = SiteSetting.get(:staff_alias_user_id)
 

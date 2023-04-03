@@ -102,4 +102,14 @@ describe PostRevision do
     expect(post_revision.valid?).to eq(true)
     expect(post_revision.user_id).to eq(another_user.id)
   end
+
+  it "does not error out if no post revisions" do
+    post = Fabricate(:post, user: user, post_type: Post.types[:regular])
+    revisor = PostRevisor.new(post)
+
+    expect { DiscourseEvent.trigger(:post_edited, post, false, revisor) }.not_to raise_error
+    expect { DiscourseEvent.trigger(:post_edited, post, false, revisor) }.not_to change {
+      DiscourseStaffAlias::UsersPostRevisionsLink.count
+    }
+  end
 end
