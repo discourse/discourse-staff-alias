@@ -13,9 +13,11 @@ describe PostRevision do
     user
   end
 
+  let(:staff_alias_username) { "staff_derp" }
+
   before do
     SiteSetting.set(:staff_alias_allowed_groups, Group::AUTO_GROUPS[:staff].to_s)
-    SiteSetting.set(:staff_alias_username, "staff_alias_user")
+    SiteSetting.set(:staff_alias_username, staff_alias_username)
     SiteSetting.set(:staff_alias_enabled, true)
   end
 
@@ -101,6 +103,22 @@ describe PostRevision do
 
     expect(post_revision.valid?).to eq(true)
     expect(post_revision.user_id).to eq(another_user.id)
+  end
+
+  it "allows title revisions in posts by staff alias users" do
+    post = Fabricate(:post, user: DiscourseStaffAlias.alias_user, post_type: Post.types[:regular])
+
+    post_revision =
+      Fabricate.build(
+        :post_revision,
+        post: post,
+        user: admin,
+        modifications: {
+          "title" => "A new title",
+        },
+      )
+
+    expect(post_revision.valid?).to eq(true)
   end
 
   it "does not error out if no post revisions" do
