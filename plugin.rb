@@ -226,18 +226,20 @@ after_initialize do
       end
   end
 
-  add_to_serializer(:post, :include_is_staff_aliased?, false) do
-    DiscourseStaffAlias.enabled? && DiscourseStaffAlias.user_allowed?(scope.current_user) &&
-      object.user_id == SiteSetting.get(:staff_alias_user_id)
-  end
+  add_to_serializer(
+    :post,
+    :is_staff_aliased,
+    include_condition: -> do
+      DiscourseStaffAlias.user_allowed?(scope.current_user) &&
+        object.user_id == SiteSetting.get(:staff_alias_user_id)
+    end,
+  ) { true }
 
-  add_to_serializer(:post, :is_staff_aliased, false) do
-    object.user_id == SiteSetting.get(:staff_alias_user_id)
-  end
-
-  add_to_serializer(:post, :include_aliased_username?, false) { include_is_staff_aliased? }
-
-  add_to_serializer(:post, :aliased_username, false) do
+  add_to_serializer(
+    :post,
+    :aliased_username,
+    include_condition: -> { include_is_staff_aliased? },
+  ) do
     if @topic_view.present?
       @topic_view.aliased_posts_usernames[object.id]
     else
@@ -250,21 +252,23 @@ after_initialize do
     end
   end
 
-  add_to_serializer(:post_revision, :include_is_staff_aliased?, false) do
-    DiscourseStaffAlias.enabled? && DiscourseStaffAlias.user_allowed?(scope.current_user) &&
-      object.user_id == SiteSetting.get(:staff_alias_user_id)
-  end
+  add_to_serializer(
+    :post_revision,
+    :is_staff_aliased,
+    include_condition: -> do
+      DiscourseStaffAlias.user_allowed?(scope.current_user) &&
+        object.user_id == SiteSetting.get(:staff_alias_user_id)
+    end,
+  ) { true }
 
-  add_to_serializer(:post_revision, :is_staff_aliased, false) do
-    object.user_id == SiteSetting.get(:staff_alias_user_id)
-  end
-
-  add_to_serializer(:post_revision, :include_aliased_username?, false) do
-    DiscourseStaffAlias.enabled? && DiscourseStaffAlias.user_allowed?(scope.current_user) &&
-      object.user_id == SiteSetting.get(:staff_alias_user_id)
-  end
-
-  add_to_serializer(:post_revision, :aliased_username, false) do
+  add_to_serializer(
+    :post_revision,
+    :aliased_username,
+    include_condition: -> do
+      DiscourseStaffAlias.user_allowed?(scope.current_user) &&
+        object.user_id == SiteSetting.get(:staff_alias_user_id)
+    end,
+  ) do
     User
       .joins(
         "INNER JOIN discourse_staff_alias_users_post_revisions_links ON discourse_staff_alias_users_post_revisions_links.user_id = users.id",
@@ -273,27 +277,23 @@ after_initialize do
       .pluck_first(:username)
   end
 
-  add_to_serializer(:current_user, :include_can_act_as_staff_alias?, false) do
-    DiscourseStaffAlias.enabled? && DiscourseStaffAlias.user_allowed?(scope.current_user)
-  end
-
-  add_to_serializer(:current_user, :can_act_as_staff_alias, false) do
-    DiscourseStaffAlias.user_allowed?(scope.current_user)
-  end
+  add_to_serializer(
+    :current_user,
+    :can_act_as_staff_alias,
+    include_condition: -> { DiscourseStaffAlias.user_allowed?(scope.current_user) },
+  ) { true }
 
   class StaffAliasUserSerializer < BasicUserSerializer
     attributes :moderator
   end
 
-  add_to_serializer(:topic_view, :include_staff_alias_user?, false) do
-    DiscourseStaffAlias.enabled? && DiscourseStaffAlias.user_allowed?(scope.current_user)
-  end
+  add_to_serializer(
+    :topic_view,
+    :staff_alias_user,
+    include_condition: -> { DiscourseStaffAlias.user_allowed?(scope.current_user) },
+  ) { StaffAliasUserSerializer.new(DiscourseStaffAlias.alias_user, root: false).as_json }
 
-  add_to_serializer(:topic_view, :staff_alias_user, false) do
-    StaffAliasUserSerializer.new(DiscourseStaffAlias.alias_user, root: false).as_json
-  end
-
-  add_to_serializer("TopicViewDetails", :staff_alias_can_create_post, false) do
+  add_to_serializer("TopicViewDetails", :staff_alias_can_create_post) do
     Guardian.new(DiscourseStaffAlias.alias_user).can_create?(Post, object.topic)
   end
 end
