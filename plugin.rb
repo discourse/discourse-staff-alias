@@ -233,7 +233,7 @@ after_initialize do
       DiscourseStaffAlias.user_allowed?(scope.current_user) &&
         object.user_id == SiteSetting.get(:staff_alias_user_id)
     end,
-  ) { object.user_id == SiteSetting.get(:staff_alias_user_id) }
+  ) { true }
 
   add_to_serializer(
     :post,
@@ -259,7 +259,7 @@ after_initialize do
       DiscourseStaffAlias.user_allowed?(scope.current_user) &&
         object.user_id == SiteSetting.get(:staff_alias_user_id)
     end,
-  ) { object.user_id == SiteSetting.get(:staff_alias_user_id) }
+  ) { true }
 
   add_to_serializer(
     :post_revision,
@@ -281,7 +281,7 @@ after_initialize do
     :current_user,
     :can_act_as_staff_alias,
     include_condition: -> { DiscourseStaffAlias.user_allowed?(scope.current_user) },
-  ) { DiscourseStaffAlias.user_allowed?(scope.current_user) }
+  ) { true }
 
   class StaffAliasUserSerializer < BasicUserSerializer
     attributes :moderator
