@@ -32,6 +32,7 @@ describe PostsController do
     SiteSetting.set(:staff_alias_username, "some_alias")
     SiteSetting.set(:staff_alias_enabled, true)
     SiteSetting.set(:editing_grace_period, 0)
+    Group.refresh_automatic_groups!
   end
 
   describe "#update" do
