@@ -248,7 +248,7 @@ after_initialize do
           "INNER JOIN discourse_staff_alias_users_posts_links ON discourse_staff_alias_users_posts_links.user_id = users.id",
         )
         .where("discourse_staff_alias_users_posts_links.post_id = ?", object.id)
-        .pluck_first(:username)
+        .pick(:username)
     end
   end
 
@@ -274,7 +274,7 @@ after_initialize do
         "INNER JOIN discourse_staff_alias_users_post_revisions_links ON discourse_staff_alias_users_post_revisions_links.user_id = users.id",
       )
       .where("discourse_staff_alias_users_post_revisions_links.post_revision_id = ?", object.id)
-      .pluck_first(:username)
+      .pick(:username)
   end
 
   add_to_serializer(
