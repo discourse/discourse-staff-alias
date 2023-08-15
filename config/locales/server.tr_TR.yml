@@ -5,3 +5,13 @@
 # https://translate.discourse.org/
 
 tr_TR:
+  site_settings:
+    staff_alias_enabled: "discourse-staff-alias eklentisini etkinleştirin"
+    staff_alias_username: "Takma adlı kullanıcının kullanıcı adı"
+    staff_alias_allowed_groups: "Personel takma adlı kullanıcı olarak gönderi paylaşmasına izin verilen gruplar"
+    errors:
+      staff_alias_username_not_set: "'staff_alias_username' ögesini yapılandırmadıysanız discourse-staff-alias'ı etkinleştiremezsiniz."
+  post_revisions:
+    errors:
+      cannot_edit_whisper_as_staff_alias: "Personel takma adlı kullanıcı olarak fısıltıyı düzenleyemezsiniz."
+      cannot_edit_aliased_post_as_staff: "Personel takma adı gönderisini yalnızca personel takma adı kullanıcısı olarak düzenleyebilirsiniz."

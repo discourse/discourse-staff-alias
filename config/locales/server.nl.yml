@@ -5,3 +5,13 @@
 # https://translate.discourse.org/
 
 nl:
+  site_settings:
+    staff_alias_enabled: "Discourse-staffaliasplug-in inschakelen"
+    staff_alias_username: "Gebruikersnaam van de aliasgebruiker"
+    staff_alias_allowed_groups: "Groepen die mogen plaatsen als stafalias"
+    errors:
+      staff_alias_username_not_set: "Je kunt discourse-staff-alias alleen inschakelen als je 'staff_alias_username' hebt geconfigureerd."
+  post_revisions:
+    errors:
+      cannot_edit_whisper_as_staff_alias: "Je kunt een fluisterbericht niet bewerken als stafalias."
+      cannot_edit_aliased_post_as_staff: "Je kunt een als stafalias geplaatst bericht alleen bewerken als de stafaliasgebruiker."

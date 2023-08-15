@@ -5,3 +5,20 @@
 # https://translate.discourse.org/
 
 ar:
+  js:
+    composer:
+      composer_actions:
+        as_staff_alias:
+          reply:
+            label: "تبديل الاسم المستعار للرد كمستخدم من فريق العمل"
+            desc: "سيتم إنشاء المشاركة تحت اسم مستعار لمستخدم من فريق العمل"
+          edit:
+            label: "تبديل الاسم المستعار للتعديل كمستخدم من فريق العمل"
+            desc: "سيتم تعديل المنشور تحت اسم مستعار لمستخدم من فريق العمل"
+          create_topic:
+            label: "إنشاء موضوع جديد باسم مستعار لمستخدم من فريق العمل"
+            desc: "سيتم إنشاء الموضوع تحت اسم مستعار لمستخدم من فريق العمل"
+    discourse_staff_alias:
+      poster_icon_title: "تم النشر من قِبل @%{username} باسم مستعار لمستخدم من فريق العمل"
+      post_revision_icon_title: "تم التعديل من قِبل @%{username} باسم مستعار لمستخدم من فريق العمل"
+      aliased_user_deleted: "مستخدم محذوف"

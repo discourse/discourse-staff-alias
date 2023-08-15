@@ -5,3 +5,13 @@
 # https://translate.discourse.org/
 
 zh_CN:
+  site_settings:
+    staff_alias_enabled: "启用 discourse-staff-alias 插件"
+    staff_alias_username: "别名用户的用户名"
+    staff_alias_allowed_groups: "允许以管理人员别名用户身份发帖的群组"
+    errors:
+      staff_alias_username_not_set: "除非您配置了“staff_alias_username”，否则您将无法启用 discourse-staff-alias。"
+  post_revisions:
+    errors:
+      cannot_edit_whisper_as_staff_alias: "您无法以管理人员别名用户的身份编辑密语。"
+      cannot_edit_aliased_post_as_staff: "以管理人员别名用户的身份只能编辑管理人员别名帖子。"

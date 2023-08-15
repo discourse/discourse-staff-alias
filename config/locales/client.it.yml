@@ -5,3 +5,20 @@
 # https://translate.discourse.org/
 
 it:
+  js:
+    composer:
+      composer_actions:
+        as_staff_alias:
+          reply:
+            label: "Attiva/disattiva Rispondi come alias dello staff"
+            desc: "Il messaggio verrà creato con un utente alias dello staff"
+          edit:
+            label: "Attiva/disattiva Modifica come alias dello staff"
+            desc: "Il messaggio verrà modificato con un utente alias dello staff"
+          create_topic:
+            label: "Crea un nuovo argomento come alias dello staff"
+            desc: "L'argomento verrà creato con un utente alias dello staff"
+    discourse_staff_alias:
+      poster_icon_title: "Pubblicato come alias dello staff da @%{username}"
+      post_revision_icon_title: "Modificato come alias dello staff da @%{username}"
+      aliased_user_deleted: "Utente eliminato"

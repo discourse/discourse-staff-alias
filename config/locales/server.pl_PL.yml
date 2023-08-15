@@ -5,3 +5,13 @@
 # https://translate.discourse.org/
 
 pl_PL:
+  site_settings:
+    staff_alias_enabled: "Włącz wtyczkę discourse-staff-alias"
+    staff_alias_username: "Nazwa użytkownika aliasu"
+    staff_alias_allowed_groups: "Grupy, które mogą publikować jako alias użytkownika personelu"
+    errors:
+      staff_alias_username_not_set: "Nie możesz włączyć discourse-staff-alias, chyba że skonfigurowałeś 'staff_alias_username'."
+  post_revisions:
+    errors:
+      cannot_edit_whisper_as_staff_alias: "Nie możesz edytować szeptu jako użytkownik aliasu personelu."
+      cannot_edit_aliased_post_as_staff: "Możesz edytować post aliasu personelu tylko jako użytkownik aliasu personelu."

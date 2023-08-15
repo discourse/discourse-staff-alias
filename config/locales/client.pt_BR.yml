@@ -5,3 +5,20 @@
 # https://translate.discourse.org/
 
 pt_BR:
+  js:
+    composer:
+      composer_actions:
+        as_staff_alias:
+          reply:
+            label: "Ativar resposta como pseudônimo da equipe"
+            desc: "A postagem será criada sob um(a) usuário(a) da equipe com pseudônimo"
+          edit:
+            label: "Ativar edição como pseudônimo da equipe"
+            desc: "A postagem será editada sob um(a) usuário(a) da equipe com pseudônimo"
+          create_topic:
+            label: "Criar novo tópico como pseudônimo da equipe"
+            desc: "O tópico será criado sob um(a) usuário(a) da equipe com pseudônimo"
+    discourse_staff_alias:
+      poster_icon_title: "Postado como pseudônimo da equipe por %{username}"
+      post_revision_icon_title: "Editado como pseudônimo da equipe por %{username}"
+      aliased_user_deleted: "Usuário(a) excluído(a)"

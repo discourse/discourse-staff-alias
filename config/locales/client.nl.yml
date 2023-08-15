@@ -5,3 +5,20 @@
 # https://translate.discourse.org/
 
 nl:
+  js:
+    composer:
+      composer_actions:
+        as_staff_alias:
+          reply:
+            label: "Antwoorden als stafalias schakelen"
+            desc: "Bericht wordt gemaakt onder een stafalias"
+          edit:
+            label: "Bewerken als stafalias schakelen"
+            desc: "Bericht wordt bewerkt onder een stafalias"
+          create_topic:
+            label: "Nieuw topic maken als stafalias"
+            desc: "Topic wordt gemaakt onder een stafalias"
+    discourse_staff_alias:
+      poster_icon_title: "Geplaatst als stafalias door @%{username}"
+      post_revision_icon_title: "Bewerkt als stafalias door @%{username}"
+      aliased_user_deleted: "Verwijderde gebruiker"

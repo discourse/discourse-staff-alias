@@ -5,3 +5,20 @@
 # https://translate.discourse.org/
 
 fi:
+  js:
+    composer:
+      composer_actions:
+        as_staff_alias:
+          reply:
+            label: "Vastaa henkilökunnan aliaksella käyttöön/pois käytöstä"
+            desc: "Viesti luodaan henkilökunnan aliaskäyttäjän nimellä"
+          edit:
+            label: "Muokkaa henkilökunnan aliaksella käyttöön/pois käytöstä"
+            desc: "Viestiä muokataan henkilökunnan aliaskäyttäjän nimellä"
+          create_topic:
+            label: "Luo uusi ketju henkilökunnan aliaksella"
+            desc: "Ketju luodaan henkilökunnan aliaskäyttäjän nimellä"
+    discourse_staff_alias:
+      poster_icon_title: "Käyttäjän @%{username} julkaisema henkilökunnan aliaksella"
+      post_revision_icon_title: "Käyttäjän @%{username} muokkaama henkilökunnan aliaksella"
+      aliased_user_deleted: "Poistettu käyttäjä"

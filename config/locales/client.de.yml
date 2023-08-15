@@ -5,3 +5,20 @@
 # https://translate.discourse.org/
 
 de:
+  js:
+    composer:
+      composer_actions:
+        as_staff_alias:
+          reply:
+            label: "„Mit Team-Alias antworten“ umschalten"
+            desc: "Der Beitrag wird mit einem Alias-Team-Benutzer erstellt"
+          edit:
+            label: "„Mit Team-Alias bearbeiten“ umschalten"
+            desc: "Der Beitrag wird mit einem Alias-Team-Benutzer bearbeitet"
+          create_topic:
+            label: "Neues Thema mit Team-Alias erstellen"
+            desc: "Das Thema wird mit einem Alias-Team-Benutzer erstellt"
+    discourse_staff_alias:
+      poster_icon_title: "Veröffentlicht als Team-Alias von @%{username}"
+      post_revision_icon_title: "Bearbeitet als Team-Alias von @%{username}"
+      aliased_user_deleted: "Gelöschter Benutzer"

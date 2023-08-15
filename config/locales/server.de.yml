@@ -5,3 +5,13 @@
 # https://translate.discourse.org/
 
 de:
+  site_settings:
+    staff_alias_enabled: "discourse-staff-alias-Plug-in aktivieren"
+    staff_alias_username: "Benutzername des Alias-Benutzers"
+    staff_alias_allowed_groups: "Gruppen, die als Team-Alias-Benutzer Beiträge veröffentlichen dürfen"
+    errors:
+      staff_alias_username_not_set: "Du kannst discourse-staff-alias nur aktivieren, wenn du „staff_alias_username“ konfiguriert hast."
+  post_revisions:
+    errors:
+      cannot_edit_whisper_as_staff_alias: "Du kannst einen geflüsterten Beitrag nicht als Team-Alias-Benutzer bearbeiten."
+      cannot_edit_aliased_post_as_staff: "Du kannst einen Team-Alias-Beitrag nur als Team-Alias-Benutzer bearbeiten."
