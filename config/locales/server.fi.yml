@@ -5,3 +5,13 @@
 # https://translate.discourse.org/
 
 fi:
+  site_settings:
+    staff_alias_enabled: "Ota discourse-staff-alias-lisäosa käyttöön"
+    staff_alias_username: "Aliaskäyttäjän käyttäjätunnus"
+    staff_alias_allowed_groups: "Ryhmät, jotka voivat lähettää viestejä henkilökunnan aliaskäyttäjänä"
+    errors:
+      staff_alias_username_not_set: "Et voi ottaa discourse-staff-alias-lisäosaa käyttöön ellet ole määrittänyt \"staff_alias_username\"-asetusta."
+  post_revisions:
+    errors:
+      cannot_edit_whisper_as_staff_alias: "Et voi muokata kuiskausta henkilökunnan aliaskäyttäjänä."
+      cannot_edit_aliased_post_as_staff: "Voit muokata henkilökunnan aliasviestiä vain henkilökunnan aliaskäyttäjänä."

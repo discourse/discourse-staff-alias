@@ -5,3 +5,13 @@
 # https://translate.discourse.org/
 
 it:
+  site_settings:
+    staff_alias_enabled: "Abilita il plugin discourse-staff-alias"
+    staff_alias_username: "Nome utente dell'utente alias"
+    staff_alias_allowed_groups: "Gruppi a cui è consentito pubblicare messaggi come utente alias dello staff"
+    errors:
+      staff_alias_username_not_set: "Non puoi abilitare discourse-staff-alias a meno che tu non abbia configurato \"staff_alias_username\"."
+  post_revisions:
+    errors:
+      cannot_edit_whisper_as_staff_alias: "Non puoi modificare un sussurro come utente alias dello staff."
+      cannot_edit_aliased_post_as_staff: "Puoi modificare un messaggio dell'alias dello staff solo come utente alias dello staff."

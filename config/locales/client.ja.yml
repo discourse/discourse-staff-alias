@@ -5,3 +5,20 @@
 # https://translate.discourse.org/
 
 ja:
+  js:
+    composer:
+      composer_actions:
+        as_staff_alias:
+          reply:
+            label: "スタッフエイリアスとして返信を切り替える"
+            desc: "投稿は、エイリアススタッフユーザーとして作成されます"
+          edit:
+            label: "スタッフエイリアスとして編集を切り替える"
+            desc: "投稿は、エイリアススタッフユーザーとして編集されます"
+          create_topic:
+            label: "スタッフエイリアスとして新しいトピックを作成"
+            desc: "トピックは、エイリアススタッフユーザーとして作成されます"
+    discourse_staff_alias:
+      poster_icon_title: "@%{username} よりスタッフエイリアスとして投稿されました"
+      post_revision_icon_title: "@%{username} よりスタッフエイリアスとして編集されました"
+      aliased_user_deleted: "削除されたユーザー"

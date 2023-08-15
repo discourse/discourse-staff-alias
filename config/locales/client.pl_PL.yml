@@ -5,3 +5,20 @@
 # https://translate.discourse.org/
 
 pl_PL:
+  js:
+    composer:
+      composer_actions:
+        as_staff_alias:
+          reply:
+            label: "Przełącz odpowiedź jako alias personelu"
+            desc: "Post zostanie utworzony pod aliasem użytkownika personelu"
+          edit:
+            label: "Przełącz edycję jako alias personelu"
+            desc: "Post zostanie edytowany pod aliasem użytkownika personelu"
+          create_topic:
+            label: "Utwórz nowy temat jako alias personelu"
+            desc: "Post zostanie utworzony pod aliasem użytkownika personelu"
+    discourse_staff_alias:
+      poster_icon_title: "Opublikowany jako alias personelu przez @%{username}"
+      post_revision_icon_title: "Edytowany jako alias personelu przez @%{username}"
+      aliased_user_deleted: "Usunięty użytkownik"

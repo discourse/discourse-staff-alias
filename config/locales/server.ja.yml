@@ -5,3 +5,13 @@
 # https://translate.discourse.org/
 
 ja:
+  site_settings:
+    staff_alias_enabled: "discourse-staff-alias プラグインを有効にする"
+    staff_alias_username: "エイリアスユーザーのユーザー名"
+    staff_alias_allowed_groups: "スタッフエイリアスユーザーとして投稿できるグループ"
+    errors:
+      staff_alias_username_not_set: "'staff_alias_username' を構成しない限り、discourse-staff-alias を有効にできません。"
+  post_revisions:
+    errors:
+      cannot_edit_whisper_as_staff_alias: "スタッフエイリアスユーザーとしてささやきを編集することはできません。"
+      cannot_edit_aliased_post_as_staff: "スタッフエイリアスの投稿は、スタッフエイリアスユーザーとしてのみ編集できます。"

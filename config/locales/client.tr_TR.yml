@@ -5,3 +5,20 @@
 # https://translate.discourse.org/
 
 tr_TR:
+  js:
+    composer:
+      composer_actions:
+        as_staff_alias:
+          reply:
+            label: "Personel Takma Adı Olarak Yanıtlamayı Değiştir"
+            desc: "Gönderi, personel kullanıcısı takma adı altında oluşturulur"
+          edit:
+            label: "Personel Takma Adı Olarak Düzenlemeyi Değiştir"
+            desc: "Gönderi, personel kullanıcısı takma adı altında düzenlenir"
+          create_topic:
+            label: "Personel Takma Adı Olarak Yeni Konu Oluştur"
+            desc: "Konu, personel kullanıcısı takma adı altında oluşturulur"
+    discourse_staff_alias:
+      poster_icon_title: "@%{username} tarafından personel takma adı olarak gönderildi"
+      post_revision_icon_title: "@%{username} tarafından personel takma adı olarak düzenlendi"
+      aliased_user_deleted: "Silinmiş Kullanıcı"

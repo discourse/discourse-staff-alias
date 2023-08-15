@@ -5,3 +5,13 @@
 # https://translate.discourse.org/
 
 pt_BR:
+  site_settings:
+    staff_alias_enabled: "Ativar plugin discourse-staff-alias"
+    staff_alias_username: "Nome de usuário(a) do usuário(a) com pseudônimo"
+    staff_alias_allowed_groups: "Grupos com permissão para postar como usuário(a) com pseudônimo da equipe"
+    errors:
+      staff_alias_username_not_set: "Não é possível ativar discourse-staff-alias antes de configurar o \"staff_alias_username\"."
+  post_revisions:
+    errors:
+      cannot_edit_whisper_as_staff_alias: "Não é possível editar um sussurro como usuário(a) com pseudônimo da equipe."
+      cannot_edit_aliased_post_as_staff: "Você só pode editar uma postagem com pseudônimo da equipe como usuário(a) com pseudônimo da equipe."

@@ -5,3 +5,20 @@
 # https://translate.discourse.org/
 
 zh_CN:
+  js:
+    composer:
+      composer_actions:
+        as_staff_alias:
+          reply:
+            label: "切换以管理人员别名身份回复"
+            desc: "帖子将在别名管理人员用户下创建"
+          edit:
+            label: "切换以管理人员别名身份编辑"
+            desc: "帖子将在别名管理人员用户下编辑"
+          create_topic:
+            label: "以管理人员别名身份创建新话题"
+            desc: "话题将在别名管理人员用户下创建"
+    discourse_staff_alias:
+      poster_icon_title: "由 @%{username} 以管理人员别名身份发布"
+      post_revision_icon_title: "由 @%{username} 以管理人员别名身份编辑"
+      aliased_user_deleted: "已删除的用户"

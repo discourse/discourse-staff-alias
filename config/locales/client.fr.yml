@@ -5,3 +5,20 @@
 # https://translate.discourse.org/
 
 fr:
+  js:
+    composer:
+      composer_actions:
+        as_staff_alias:
+          reply:
+            label: "Activer/désactiver les réponses sous un alias de membre du personnel"
+            desc: "Le message sera créé sous un alias de membre du personnel"
+          edit:
+            label: "Activer/désactiver les modifications sous un alias de membre du personnel"
+            desc: "Le message sera modifié sous un alias de membre du personnel"
+          create_topic:
+            label: "Créer un nouveau sujet en tant qu'alias de membre du personnel"
+            desc: "Le sujet sera créé sous un alias de membre du personnel"
+    discourse_staff_alias:
+      poster_icon_title: "Publié en tant qu'alias de membre du personnel par @%{username}"
+      post_revision_icon_title: "Modifié en tant qu'alias de membre du personnel par @%{username}"
+      aliased_user_deleted: "Utilisateur supprimé"

@@ -5,3 +5,13 @@
 # https://translate.discourse.org/
 
 ar:
+  site_settings:
+    staff_alias_enabled: "تفعيل المكوِّن الإضافي discourse-staff-alias"
+    staff_alias_username: "اسم المستخدم لمستخدم الاسم المستعار"
+    staff_alias_allowed_groups: "المجموعات المسموح لها بالنشر كمستخدم للاسم المستعار لفريق العمل"
+    errors:
+      staff_alias_username_not_set: "لا يمكنك تفعيل المكوِّن الإضافي discourse-staff-alias ما لم تكن قد قمت بتكوين 'staff_alias_username'."
+  post_revisions:
+    errors:
+      cannot_edit_whisper_as_staff_alias: "لا يمكنك تعديل الهمس كمستخدم للاسم المستعار لفريق العمل."
+      cannot_edit_aliased_post_as_staff: "لا يمكنك تعديل المنشورات تحت الاسم المستعار لفريق العمل إلا كمستخدم للاسم المستعار لفريق العمل."

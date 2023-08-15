@@ -5,3 +5,13 @@
 # https://translate.discourse.org/
 
 fr:
+  site_settings:
+    staff_alias_enabled: "Activer l'extension discours-staff-alias"
+    staff_alias_username: "Nom d'utilisateur de l'utilisateur alias"
+    staff_alias_allowed_groups: "Groupes autorisés à publier en tant qu'alias de membre du personnel"
+    errors:
+      staff_alias_username_not_set: "Vous ne pouvez pas activer discourse-staff-alias si vous n'avez pas configuré « staff_alias_username »."
+  post_revisions:
+    errors:
+      cannot_edit_whisper_as_staff_alias: "Vous ne pouvez pas modifier un murmure en tant qu'utilisateur alias de membre du personnel."
+      cannot_edit_aliased_post_as_staff: "Vous pouvez modifier un message d'alias de membre du personnel uniquement qu'en tant qu'utilisateur alias de membre du personnel."

@@ -5,3 +5,20 @@
 # https://translate.discourse.org/
 
 es:
+  js:
+    composer:
+      composer_actions:
+        as_staff_alias:
+          reply:
+            label: "Alternar Responder como alias del personal"
+            desc: "La publicación se creará con un alias de usuario del personal"
+          edit:
+            label: "Alternar Editar como alias del personal"
+            desc: "La publicación se editará con un alias de usuario del personal"
+          create_topic:
+            label: "Crear nuevo tema como alias del personal"
+            desc: "El tema se creará con un alias de usuario del personal"
+    discourse_staff_alias:
+      poster_icon_title: "Publicado como alias del personal por @%{username}"
+      post_revision_icon_title: "Editado como alias del personal por @%{username}"
+      aliased_user_deleted: "Usuario eliminado"
