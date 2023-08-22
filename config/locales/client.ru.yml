@@ -5,3 +5,20 @@
 # https://translate.discourse.org/
 
 ru:
+  js:
+    composer:
+      composer_actions:
+        as_staff_alias:
+          reply:
+            label: "Ответ под псевдонимом сотрудника"
+            desc: "Сообщение будет создано под псевдонимом сотрудника"
+          edit:
+            label: "Изменение под псевдонимом сотрудника"
+            desc: "Сообщение будет изменено под псевдонимом сотрудника"
+          create_topic:
+            label: "Создание темы под псевдонимом сотрудника"
+            desc: "Тема будет создана под псевдонимом сотрудника"
+    discourse_staff_alias:
+      poster_icon_title: "Опубликовано под псевдонимом сотрудника пользователем @%{username}"
+      post_revision_icon_title: "Изменено под псевдонимом сотрудника пользователем @%{username}"
+      aliased_user_deleted: "Удаленный пользователь"

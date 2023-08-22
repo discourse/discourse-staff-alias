@@ -5,3 +5,13 @@
 # https://translate.discourse.org/
 
 ru:
+  site_settings:
+    staff_alias_enabled: "Включить плагин «discourse-staff-alias»"
+    staff_alias_username: "Имя пользователя для псевдонима"
+    staff_alias_allowed_groups: "Группы, которым разрешено публиковать сообщения под псевдонимом сотрудника"
+    errors:
+      staff_alias_username_not_set: "Чтобы включить плагин «discourse-staff-alias», нужно указать параметр «staff_alias_username»."
+  post_revisions:
+    errors:
+      cannot_edit_whisper_as_staff_alias: "Изменить скрытое сообщение под псевдонимом сотрудника нельзя."
+      cannot_edit_aliased_post_as_staff: "Сообщения, опубликованные под псевдонимом сотрудника, можно изменять только под псевдонимом сотрудника."
