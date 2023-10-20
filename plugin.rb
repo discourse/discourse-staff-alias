@@ -173,7 +173,7 @@ after_initialize do
       end
     elsif self.post.user_id == SiteSetting.get(:staff_alias_user_id) &&
           User.human_user_id?(self.user_id)
-      if (self.modifications.keys & %w[wiki post_type user_id title]).present? &&
+      if (self.modifications.keys & %w[wiki post_type user_id title tags]).present? &&
            DiscourseStaffAlias.user_allowed?(self.user)
         self.user_id = SiteSetting.get(:staff_alias_user_id)
       else
