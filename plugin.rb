@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 # name: discourse-staff-alias
-# about: Allow staff users to post under an alias
+# about: Allows set groups to create topics and posts, as well as make edits, as an alias user.
+# meta_topic_id: 156202
 # version: 0.1
 # authors: tgxworld
 # url: https://github.com/discourse/discourse-staff-alias
