@@ -1,14 +1,14 @@
 import { withPluginApi } from "discourse/lib/plugin-api";
-import I18n from "I18n";
-import discourseComputed, { observes } from "discourse-common/utils/decorators";
 import { CREATE_TOPIC, EDIT, REPLY } from "discourse/models/composer";
+import discourseComputed, { observes } from "discourse-common/utils/decorators";
+import I18n from "I18n";
 
 const PLUGIN_ID = "discourse-staff-alias";
 
 function initialize(api) {
   const currentUser = api.getCurrentUser();
 
-  if (currentUser && currentUser.can_act_as_staff_alias) {
+  if (currentUser?.can_act_as_staff_alias) {
     api.modifySelectKit("composer-actions").prependContent((component) => {
       if (component.action === CREATE_TOPIC) {
         return [
@@ -176,7 +176,7 @@ export default {
   name: "discourse-staff-alias",
 
   initialize(container) {
-    const siteSettings = container.lookup("site-settings:main");
+    const siteSettings = container.lookup("service:site-settings");
 
     if (siteSettings.staff_alias_enabled) {
       withPluginApi("0.10.0", initialize);
