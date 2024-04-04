@@ -41,7 +41,7 @@ describe SiteSetting do
 
       expect do SiteSetting.set(:staff_alias_username, "a") end.to raise_error(
         Discourse::InvalidParameters,
-        /#{I18n.t("user.username.short", min: 2)}/,
+        /#{I18n.t("user.username.short", count: 2)}/,
       )
     end
 
