@@ -9,17 +9,20 @@
 
 enabled_site_setting :staff_alias_enabled
 
-PLUGIN_NAME ||= "DiscourseStaffAlias"
-
-%w[
-  lib/discourse-staff-alias/engine.rb
-  lib/discourse-staff-alias/validators/username_validator.rb
-  lib/discourse-staff-alias/validators/enabled_validator.rb
-].each { |path| load File.expand_path(path, __dir__) }
+require_relative "lib/discourse_staff_alias/engine"
+require_relative "lib/discourse_staff_alias/validators/username_validator"
+require_relative "lib/discourse_staff_alias/validators/enabled_validator"
+require_relative "lib/discourse_staff_alias/with_current_user"
+require_relative "lib/discourse_staff_alias/user_extension"
+require_relative "lib/discourse_staff_alias/post_extension"
+require_relative "lib/discourse_staff_alias/post_revision_extension"
+require_relative "lib/discourse_staff_alias/topics_controller_extension"
+require_relative "lib/discourse_staff_alias/posts_controller_extension"
 
 register_asset "stylesheets/common/discourse-staff-alias.scss"
 
 after_initialize do
+  # rubocop:disable Discourse/Plugins/UsePluginInstanceOn
   DiscourseEvent.on(:site_setting_changed) do |name, _old_value, new_value|
     if name.to_s == "staff_alias_username" && new_value.present?
       DistributedMutex.synchronize("discourse_staff_alias") do
@@ -44,92 +47,14 @@ after_initialize do
       end
     end
   end
+  # rubocop:enable Discourse/Plugins/UsePluginInstanceOn
 
   reloadable_patch do
-    User.class_eval do
-      attr_accessor :aliased_user
-
-      has_many :users_posts_links, class_name: "DiscourseStaffAlias::UsersPostsLink"
-      has_many :users_post_revisions_links,
-               class_name: "DiscourseStaffAlias::UsersPostRevisionsLink"
-
-      def can_post_as_staff_alias
-        @can_post_as_staff_alias ||=
-          begin
-            allowed_group_ids = SiteSetting.staff_alias_allowed_groups.split("|")
-            GroupUser.exists?(user_id: self.id, group_id: allowed_group_ids)
-          end
-      end
-    end
-
-    module WithCurrentUser
-      def with_current_user(user)
-        @current_user = user
-        yield if block_given?
-      ensure
-        @current_user = nil
-      end
-
-      def current_user
-        @current_user || current_user_provider.current_user
-      end
-    end
-
-    Post.class_eval do
-      has_many :users_posts_links,
-               class_name: "DiscourseStaffAlias::UsersPostsLink",
-               dependent: :delete_all
-    end
-
-    PostRevision.class_eval do
-      has_many :users_post_revisions_links,
-               class_name: "DiscourseStaffAlias::UsersPostRevisionsLink",
-               dependent: :delete_all
-    end
-
-    TopicsController.class_eval do
-      include WithCurrentUser
-
-      around_action do |controller, action|
-        if (action_name = controller.action_name) == "update" &&
-             (params = controller.params)["as_staff_alias"]
-          existing_user = controller.current_user
-
-          raise Discourse::InvalidAccess if !DiscourseStaffAlias.user_allowed?(existing_user)
-
-          alias_user = DiscourseStaffAlias.alias_user
-          alias_user.aliased_user = existing_user
-
-          controller.with_current_user(alias_user) { action.call }
-        else
-          action.call
-        end
-      end
-    end
-
-    PostsController.class_eval do
-      include WithCurrentUser
-
-      around_action do |controller, action|
-        if DiscourseStaffAlias::CONTROLLER_ACTIONS.include?(action_name = controller.action_name) &&
-             (params = controller.params).dig(
-               *DiscourseStaffAlias::CONTROLLER_PARAMS[action_name],
-             ) == "true"
-          existing_user = controller.current_user
-
-          if !DiscourseStaffAlias.user_allowed?(existing_user) || params[:whisper]
-            raise Discourse::InvalidAccess
-          end
-
-          alias_user = DiscourseStaffAlias.alias_user
-          alias_user.aliased_user = existing_user
-
-          controller.with_current_user(alias_user) { action.call }
-        else
-          action.call
-        end
-      end
-    end
+    User.prepend(DiscourseStaffAlias::UserExtension)
+    Post.prepend(DiscourseStaffAlias::PostExtension)
+    PostRevision.prepend(DiscourseStaffAlias::PostRevisionExtension)
+    TopicsController.prepend(DiscourseStaffAlias::TopicsControllerExtension)
+    PostsController.prepend(DiscourseStaffAlias::PostsControllerExtension)
   end
 
   on(:post_created) do |post, opts, user|

@@ -3,7 +3,7 @@
 require "rails_helper"
 
 describe CurrentUserSerializer do
-  fab!(:group) { Fabricate(:group) }
+  fab!(:group)
 
   fab!(:user) do
     user = Fabricate(:user, trust_level: TrustLevel.levels[:regular])

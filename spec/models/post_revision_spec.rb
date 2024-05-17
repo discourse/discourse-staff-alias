@@ -3,8 +3,8 @@
 require "rails_helper"
 
 describe PostRevision do
-  fab!(:user) { Fabricate(:user) }
-  fab!(:post_revision) { Fabricate(:post_revision) }
+  fab!(:user)
+  fab!(:post_revision)
 
   fab!(:admin) do
     user = Fabricate(:admin)
