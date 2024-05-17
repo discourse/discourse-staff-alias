@@ -3,8 +3,8 @@
 require "rails_helper"
 
 describe Post do
-  fab!(:user) { Fabricate(:user) }
-  fab!(:post) { Fabricate(:post) }
+  fab!(:user)
+  fab!(:post)
 
   it "cleans up users_posts_links association on destroy" do
     link = ::DiscourseStaffAlias::UsersPostsLink.create!(user: user, post: post)

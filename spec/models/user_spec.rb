@@ -3,9 +3,9 @@
 require "rails_helper"
 
 describe User do
-  fab!(:user) { Fabricate(:user) }
-  fab!(:post) { Fabricate(:post) }
-  fab!(:group) { Fabricate(:group) }
+  fab!(:user)
+  fab!(:post)
+  fab!(:group)
 
   fab!(:admin) do
     user = Fabricate(:admin)
@@ -14,7 +14,7 @@ describe User do
     user
   end
 
-  fab!(:post_revision) { Fabricate(:post_revision) }
+  fab!(:post_revision)
 
   it "does not clean up users_posts_links association on destroy" do
     link = ::DiscourseStaffAlias::UsersPostsLink.create!(user: user, post: post)

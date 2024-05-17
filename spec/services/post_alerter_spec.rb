@@ -3,7 +3,7 @@
 require "rails_helper"
 
 describe PostAlerter do
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
 
   fab!(:moderator) do
     user = Fabricate(:moderator)

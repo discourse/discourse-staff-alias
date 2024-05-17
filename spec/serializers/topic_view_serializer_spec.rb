@@ -3,7 +3,7 @@
 require "rails_helper"
 
 describe TopicViewSerializer do
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
 
   fab!(:admin) do
     Fabricate(:admin).tap do |user|
@@ -20,7 +20,7 @@ describe TopicViewSerializer do
     user
   end
 
-  fab!(:category) { Fabricate(:category) }
+  fab!(:category)
 
   before do
     SiteSetting.set(:staff_alias_username, "some_alias")

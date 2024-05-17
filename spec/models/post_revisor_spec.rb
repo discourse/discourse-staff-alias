@@ -3,11 +3,11 @@
 require "rails_helper"
 
 describe PostRevisor do
-  fab!(:user) { Fabricate(:user) }
+  fab!(:user)
   fab!(:post) { Fabricate(:post, user: user) }
 
   context "when post_edited" do
-    fab!(:moderator) { Fabricate(:moderator) }
+    fab!(:moderator)
     let(:post_revisor) { PostRevisor.new(post) }
 
     before do
