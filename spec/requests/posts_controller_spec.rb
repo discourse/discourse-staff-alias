@@ -106,6 +106,7 @@ describe PostsController do
                topic_id: post_1.topic_id,
                reply_to_post_number: 1,
                as_staff_alias: true,
+               whisper: "false",
              }
 
         expect(response.status).to eq(200)
