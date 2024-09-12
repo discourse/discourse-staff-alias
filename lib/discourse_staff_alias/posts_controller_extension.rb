@@ -14,7 +14,7 @@ module DiscourseStaffAlias
              ) == "true"
           existing_user = controller.current_user
 
-          if !DiscourseStaffAlias.user_allowed?(existing_user) || params[:whisper]
+          if !DiscourseStaffAlias.user_allowed?(existing_user) || params[:whisper].to_s == "true"
             raise Discourse::InvalidAccess
           end
 
