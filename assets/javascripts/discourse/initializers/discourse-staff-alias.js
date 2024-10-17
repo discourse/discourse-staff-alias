@@ -50,31 +50,21 @@ function initialize(api) {
       }
     });
 
-    api.modifyClass("component:composer-presence-display", {
-      pluginId: PLUGIN_ID,
+    api.modifyClass(
+      "component:composer-presence-display",
+      (ComposerPresenceDisplayComponent) =>
+        class extends ComposerPresenceDisplayComponent {
+          get state() {
+            const { isReplyAsStaffAlias } = this.args.model;
 
-      @discourseComputed(
-        "model.replyingToTopic",
-        "model.editingPost",
-        "model.whisper",
-        "model.composerOpened",
-        "isDestroying",
-        "model.isReplyAsStaffAlias"
-      )
-      state(
-        replyingToTopic,
-        editingPost,
-        whisper,
-        composerOpen,
-        isDestroying,
-        isReplyAsStaffAlias
-      ) {
-        if (isReplyAsStaffAlias) {
-          return "whisper";
+            if (isReplyAsStaffAlias) {
+              return "whisper";
+            }
+
+            return super.state;
+          }
         }
-        return this._super(...arguments);
-      },
-    });
+    );
 
     api.modifyClass("component:composer-actions", {
       pluginId: PLUGIN_ID,
