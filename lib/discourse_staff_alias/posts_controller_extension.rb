@@ -9,9 +9,9 @@ module DiscourseStaffAlias
 
       around_action do |controller, action|
         if DiscourseStaffAlias::CONTROLLER_ACTIONS.include?(action_name = controller.action_name) &&
-             (params = controller.params).dig(
-               *DiscourseStaffAlias::CONTROLLER_PARAMS[action_name],
-             ) == "true"
+          (params = controller.params).dig(
+            *DiscourseStaffAlias::CONTROLLER_PARAMS[action_name],
+            ) == "true"
           existing_user = controller.current_user
 
           if !DiscourseStaffAlias.user_allowed?(existing_user) || params[:whisper].to_s == "true"
