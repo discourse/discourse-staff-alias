@@ -1,15 +1,15 @@
-{{#if model.is_staff_aliased}}
+{{#if this.model.is_staff_aliased}}
   <div class="aliased-staff-user-details">
-    {{#if model.aliased_username}}
+    {{#if this.model.aliased_username}}
       <LinkTo
         @route="user"
-        @model={{model.aliased_username}}
+        @model={{this.model.aliased_username}}
         title={{i18n
           "discourse_staff_alias.post_revision_icon_title"
-          username=model.aliased_username
+          username=this.model.aliased_username
         }}
       >
-        <span>({{d-icon "user-secret"}} {{model.aliased_username}})</span>
+        <span>({{d-icon "user-secret"}} {{this.model.aliased_username}})</span>
       </LinkTo>
     {{else}}
       <span>
