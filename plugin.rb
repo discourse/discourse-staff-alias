@@ -100,6 +100,8 @@ after_initialize do
           User.human_user_id?(self.user_id)
       if !DiscourseStaffAlias.user_allowed?(self.user)
         self.errors.add(:base, I18n.t("post_revisions.errors.cannot_edit_aliased_post_as_staff"))
+      else
+        self.user_id = SiteSetting.get(:staff_alias_user_id)
       end
     end
   end
