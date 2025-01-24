@@ -130,6 +130,22 @@ describe PostRevision do
     expect(post_revision.valid?).to eq(true)
   end
 
+  it "allows category revisions in topics by staff alias users" do
+    post = Fabricate(:post, user: DiscourseStaffAlias.alias_user, post_type: Post.types[:regular])
+
+    post_revision =
+      Fabricate.build(
+        :post_revision,
+        post: post,
+        user: admin,
+        modifications: {
+          "category_id" => "x",
+        },
+      )
+
+    expect(post_revision.valid?).to eq(true)
+  end
+
   it "does not error out if no post revisions" do
     post = Fabricate(:post, user: user, post_type: Post.types[:regular])
     revisor = PostRevisor.new(post)
