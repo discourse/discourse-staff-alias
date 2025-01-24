@@ -50,7 +50,7 @@ describe PostRevision do
     post = Fabricate(:post, user: DiscourseStaffAlias.alias_user)
     post_revision = Fabricate.build(:post_revision, post: post, user: Discourse.system_user)
 
-    expect(post_revision.valid?).to eq(true)
+    expect(post_revision).to be_valid
   end
 
   it "switches revision user to staff alias user when changing wiki status of post made as staff alias user" do
@@ -66,7 +66,7 @@ describe PostRevision do
         },
       )
 
-    expect(post_revision.valid?).to eq(true)
+    expect(post_revision).to be_valid
     expect(post_revision.user_id).to eq(SiteSetting.get(:staff_alias_user_id))
   end
 
@@ -83,7 +83,7 @@ describe PostRevision do
         },
       )
 
-    expect(post_revision.valid?).to eq(true)
+    expect(post_revision).to be_valid
     expect(post_revision.user_id).to eq(SiteSetting.get(:staff_alias_user_id))
   end
 
@@ -101,7 +101,7 @@ describe PostRevision do
         },
       )
 
-    expect(post_revision.valid?).to eq(true)
+    expect(post_revision).to be_valid
     expect(post_revision.user_id).to eq(another_user.id)
   end
 
@@ -118,7 +118,7 @@ describe PostRevision do
         },
       )
 
-    expect(post_revision.valid?).to eq(true)
+    expect(post_revision).to be_valid
   end
 
   it "allows tag revisions in topics by staff alias users" do
@@ -127,7 +127,23 @@ describe PostRevision do
     post_revision =
       Fabricate.build(:post_revision, post: post, user: admin, modifications: { "tags" => "x" })
 
-    expect(post_revision.valid?).to eq(true)
+    expect(post_revision).to be_valid
+  end
+
+  it "allows category revisions in topics by staff alias users" do
+    post = Fabricate(:post, user: DiscourseStaffAlias.alias_user, post_type: Post.types[:regular])
+
+    post_revision =
+      Fabricate.build(
+        :post_revision,
+        post: post,
+        user: admin,
+        modifications: {
+          "category_id" => "x",
+        },
+      )
+
+    expect(post_revision).to be_valid
   end
 
   it "does not error out if no post revisions" do
