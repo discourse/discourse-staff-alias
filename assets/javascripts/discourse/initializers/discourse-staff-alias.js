@@ -1,7 +1,7 @@
+import discourseComputed, { observes } from "discourse/lib/decorators";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { CREATE_TOPIC, EDIT, REPLY } from "discourse/models/composer";
-import discourseComputed, { observes } from "discourse-common/utils/decorators";
-import I18n from "I18n";
+import { i18n } from "discourse-i18n";
 
 const PLUGIN_ID = "discourse-staff-alias";
 
@@ -13,10 +13,10 @@ function initialize(api) {
       if (component.action === CREATE_TOPIC) {
         return [
           {
-            name: I18n.t(
+            name: i18n(
               "composer.composer_actions.as_staff_alias.create_topic.label"
             ),
-            description: I18n.t(
+            description: i18n(
               "composer.composer_actions.as_staff_alias.create_topic.desc"
             ),
             icon: "user-secret",
@@ -37,10 +37,10 @@ function initialize(api) {
       ) {
         return [
           {
-            name: I18n.t(
+            name: i18n(
               `composer.composer_actions.as_staff_alias.${component.action}.label`
             ),
-            description: I18n.t(
+            description: i18n(
               `composer.composer_actions.as_staff_alias.${component.action}.desc`
             ),
             icon: "user-secret",
@@ -147,13 +147,13 @@ function initialize(api) {
         if (attrs.aliased_username) {
           props.text = attrs.aliased_username;
 
-          props.title = I18n.t("discourse_staff_alias.poster_icon_title", {
+          props.title = i18n("discourse_staff_alias.poster_icon_title", {
             username: attrs.aliased_username,
           });
 
           props.url = `/u/${attrs.aliased_username}`;
         } else {
-          props.text = I18n.t("discourse_staff_alias.aliased_user_deleted");
+          props.text = i18n("discourse_staff_alias.aliased_user_deleted");
         }
 
         return props;
