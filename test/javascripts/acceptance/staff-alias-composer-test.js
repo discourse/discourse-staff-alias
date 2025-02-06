@@ -1,11 +1,11 @@
 import { click, fillIn, visit } from "@ember/test-helpers";
 import { skip, test } from "qunit";
+import { cloneJSON } from "discourse/lib/object";
 import User from "discourse/models/user";
 import topicFixtures from "discourse/tests/fixtures/topic";
 import { presentUserIds } from "discourse/tests/helpers/presence-pretender";
 import { acceptance } from "discourse/tests/helpers/qunit-helpers";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
-import { cloneJSON } from "discourse-common/lib/object";
 import { _clearSnapshots } from "select-kit/components/composer-actions";
 
 const discoursePresenceInstalled = Object.keys(requirejs.entries).any((name) =>
