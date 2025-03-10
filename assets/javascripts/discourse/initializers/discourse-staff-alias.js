@@ -1,4 +1,4 @@
-import discourseComputed, { observes } from "discourse/lib/decorators";
+import { tracked } from "@glimmer/tracking";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { CREATE_TOPIC, EDIT, REPLY } from "discourse/models/composer";
 import { i18n } from "discourse-i18n";
@@ -84,51 +84,34 @@ function initialize(api) {
       },
     });
 
-    api.modifyClass("model:composer", {
-      pluginId: PLUGIN_ID,
-      replyAsStaffAlias: false,
+    api.modifyClass(
+      "model:composer",
+      (Superclass) =>
+        class extends Superclass {
+          @tracked replyAsStaffAlias = false;
+          @tracked _originalUser;
 
-      @observes("isReplyAsStaffAlias")
-      _updateUser() {
-        if (this.isReplyAsStaffAlias) {
-          const props = {};
-
-          if (this.topic) {
-            props._originalUser = this.user;
-            props.user = this.get("topic.staff_alias_user");
+          get user() {
+            if (this.isReplyAsStaffAlias && this.topic) {
+              return this.get("topic.staff_alias_user");
+            } else {
+              return this._originalUser;
+            }
           }
 
-          this.setProperties(props);
-        } else {
-          const props = {};
-
-          if (this._originalUser) {
-            props.user = this.get("_originalUser");
+          set user(value) {
+            this._originalUser = value;
           }
 
-          this.setProperties(props);
+          get isReplyAsStaffAlias() {
+            if (this.get("editingPost") && this.get("post.is_staff_aliased")) {
+              return true;
+            } else {
+              return !this.get("whisper") && this.get("replyAsStaffAlias");
+            }
+          }
         }
-      },
-
-      @discourseComputed(
-        "replyAsStaffAlias",
-        "whisper",
-        "editingPost",
-        "post.is_staff_aliased"
-      )
-      isReplyAsStaffAlias(
-        replyAsStaffAlias,
-        whisper,
-        editingPost,
-        isStaffAliased
-      ) {
-        if (editingPost && isStaffAliased) {
-          return true;
-        } else {
-          return !whisper && replyAsStaffAlias;
-        }
-      },
-    });
+    );
 
     api.serializeOnCreate("as_staff_alias", "isReplyAsStaffAlias");
     api.serializeOnUpdate("as_staff_alias", "isReplyAsStaffAlias");
