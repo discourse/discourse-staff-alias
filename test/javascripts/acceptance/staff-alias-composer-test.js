@@ -8,7 +8,7 @@ import { acceptance } from "discourse/tests/helpers/qunit-helpers";
 import selectKit from "discourse/tests/helpers/select-kit-helper";
 import { _clearSnapshots } from "select-kit/components/composer-actions";
 
-const discoursePresenceInstalled = Object.keys(requirejs.entries).any((name) =>
+const discoursePresenceInstalled = Object.keys(requirejs.entries).some((name) =>
   name.includes("/discourse-presence/")
 );
 const testIfPresenceInstalled = discoursePresenceInstalled ? test : skip;
