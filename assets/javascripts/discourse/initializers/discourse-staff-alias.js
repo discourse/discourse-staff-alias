@@ -151,7 +151,7 @@ export default {
     const siteSettings = container.lookup("service:site-settings");
 
     if (siteSettings.staff_alias_enabled) {
-      withPluginApi("0.10.0", initialize);
+      withPluginApi(initialize);
     }
   },
 };

@@ -17,7 +17,7 @@ describe PostSerializer do
     post
   end
 
-  fab!(:post2) { Fabricate(:post) }
+  fab!(:post2, :post)
 
   before do
     SiteSetting.set(:staff_alias_username, "some_alias")
