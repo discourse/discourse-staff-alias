@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe "Core features", type: :system do
+RSpec.describe "Core features" do
   before do
     SiteSetting.set(:staff_alias_username, "new_username")
     enable_current_plugin
