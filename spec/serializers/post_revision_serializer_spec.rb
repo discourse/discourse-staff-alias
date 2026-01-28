@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "rails_helper"
-
 describe PostRevisionSerializer do
   fab!(:moderator) do
     user = Fabricate(:moderator)

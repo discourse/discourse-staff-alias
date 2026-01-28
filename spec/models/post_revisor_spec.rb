@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "rails_helper"
-
 describe PostRevisor do
   fab!(:user)
   fab!(:post) { Fabricate(:post, user: user) }

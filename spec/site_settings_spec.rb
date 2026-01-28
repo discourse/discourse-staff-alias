@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "rails_helper"
-
 describe SiteSetting do
   describe "enabled site setting" do
     it "raises the right error when trying to enable without setting the alias username" do
