@@ -6,13 +6,49 @@ import { _clearSnapshots } from "discourse/select-kit/components/composer-action
 import topicFixtures from "discourse/tests/fixtures/topic";
 import { presentUserIds } from "discourse/tests/helpers/presence-pretender";
 import { acceptance } from "discourse/tests/helpers/qunit-helpers";
-import selectKit from "discourse/tests/helpers/select-kit-helper";
 
 const discoursePresenceInstalled = Object.keys(requirejs.entries).some((name) =>
   name.includes("/discourse-presence/")
 );
 const testIfPresenceInstalled = discoursePresenceInstalled ? test : skip;
 let staffAliasCanCreatePost = true;
+
+function composerActionsDropdown() {
+  return {
+    async expand() {
+      await click(".composer-actions-trigger");
+    },
+    async selectRowByValue(value) {
+      await click(`[data-action-id='${value}']`);
+    },
+    rowByValue(value) {
+      const el = document.querySelector(
+        `.composer-actions-dropdown [data-action-id='${value}']`
+      );
+      return {
+        exists() {
+          return !!el;
+        },
+      };
+    },
+    rows() {
+      return document.querySelectorAll(
+        ".composer-actions-dropdown [data-action-id]"
+      );
+    },
+    rowByIndex(index) {
+      const rows = document.querySelectorAll(
+        ".composer-actions-dropdown [data-action-id]"
+      );
+      const row = rows[index];
+      return {
+        value() {
+          return row ? row.dataset.actionId : null;
+        },
+      };
+    },
+  };
+}
 
 acceptance("Discourse Staff Alias", function (needs) {
   needs.user({ can_act_as_staff_alias: true });
@@ -48,7 +84,7 @@ acceptance("Discourse Staff Alias", function (needs) {
   });
 
   test("creating topic", async function (assert) {
-    const composerActions = selectKit(".composer-actions");
+    const composerActions = composerActionsDropdown();
 
     await visit("/");
     await click("button#create-topic");
@@ -60,7 +96,7 @@ acceptance("Discourse Staff Alias", function (needs) {
   });
 
   test("creating post", async function (assert) {
-    const composerActions = selectKit(".composer-actions");
+    const composerActions = composerActionsDropdown();
 
     await visit("/t/internationalization-localization/280");
     await click("#topic-footer-buttons .create");
@@ -76,7 +112,7 @@ acceptance("Discourse Staff Alias", function (needs) {
 
     await visit("/t/internationalization-localization/280");
     await click("#topic-footer-buttons .create");
-    const composerActions = selectKit(".composer-actions");
+    const composerActions = composerActionsDropdown();
     await composerActions.expand();
 
     assert.false(
@@ -87,7 +123,7 @@ acceptance("Discourse Staff Alias", function (needs) {
   testIfPresenceInstalled(
     "uses whisper channel for presence",
     async function (assert) {
-      const composerActions = selectKit(".composer-actions");
+      const composerActions = composerActionsDropdown();
 
       await visit("/t/internationalization-localization/280");
       await click("#topic-footer-buttons .create");
@@ -118,7 +154,7 @@ acceptance("Discourse Staff Alias", function (needs) {
   );
 
   test("editing post", async function (assert) {
-    const composerActions = selectKit(".composer-actions");
+    const composerActions = composerActionsDropdown();
 
     await visit("/t/internationalization-localization/280");
     await click("article#post_1 button.show-more-actions");

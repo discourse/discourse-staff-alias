@@ -3,51 +3,68 @@ import { withPluginApi } from "discourse/lib/plugin-api";
 import { CREATE_TOPIC, EDIT, REPLY } from "discourse/models/composer";
 import { i18n } from "discourse-i18n";
 
-const PLUGIN_ID = "discourse-staff-alias";
-
 function initialize(api) {
   const currentUser = api.getCurrentUser();
 
   if (currentUser?.can_act_as_staff_alias) {
-    api.modifySelectKit("composer-actions").prependContent((component) => {
-      if (component.action === CREATE_TOPIC) {
-        return [
-          {
-            name: i18n(
-              "composer.composer_actions.as_staff_alias.create_topic.label"
-            ),
-            description: i18n(
-              "composer.composer_actions.as_staff_alias.create_topic.desc"
-            ),
-            icon: "user-secret",
-            id: "toggle_reply_as_staff_alias",
-          },
-        ];
+    api.registerValueTransformer("composer-actions-content", ({ value, context }) => {
+      const { action, topic, post, composerModel } = context;
+
+      if (action === CREATE_TOPIC) {
+        value.unshift({
+          name: i18n(
+            "composer.composer_actions.as_staff_alias.create_topic.label"
+          ),
+          description: i18n(
+            "composer.composer_actions.as_staff_alias.create_topic.desc"
+          ),
+          icon: "user-secret",
+          id: "toggle_reply_as_staff_alias",
+        });
       }
+
+      const site = api.container.lookup("service:site");
+
+      if (
+        topic?.details?.staff_alias_can_create_post &&
+        (action === REPLY ||
+          (action === EDIT &&
+            post?.post_type !== site?.post_types?.whisper &&
+            !post?.is_staff_aliased))
+      ) {
+        value.push({
+          name: i18n(
+            `composer.composer_actions.as_staff_alias.${action}.label`
+          ),
+          description: i18n(
+            `composer.composer_actions.as_staff_alias.${action}.desc`
+          ),
+          icon: "user-secret",
+          id: "toggle_reply_as_staff_alias",
+        });
+      }
+
+      return value;
     });
 
-    api.modifySelectKit("composer-actions").appendContent((component) => {
-      if (
-        component.topic?.details?.staff_alias_can_create_post &&
-        (component.action === REPLY ||
-          (component.action === EDIT &&
-            component.get("post.post_type") !==
-              component.get("site.post_types.whisper") &&
-            !component.get("post.is_staff_aliased")))
-      ) {
-        return [
-          {
-            name: i18n(
-              `composer.composer_actions.as_staff_alias.${component.action}.label`
-            ),
-            description: i18n(
-              `composer.composer_actions.as_staff_alias.${component.action}.desc`
-            ),
-            icon: "user-secret",
-            id: "toggle_reply_as_staff_alias",
-          },
-        ];
+    api.registerBehaviorTransformer("composer-actions-on-select", ({ context, next }) => {
+      const { actionId, model } = context;
+
+      if (actionId === "toggle_reply_as_staff_alias") {
+        model.toggleProperty("replyAsStaffAlias");
+        if (model.whisper) {
+          model.set("whisper", false);
+        }
+        return;
       }
+
+      if (actionId === "toggle_whisper") {
+        if (model.replyAsStaffAlias) {
+          model.set("replyAsStaffAlias", false);
+        }
+      }
+
+      next();
     });
 
     api.modifyClass(
@@ -65,24 +82,6 @@ function initialize(api) {
           }
         }
     );
-
-    api.modifyClass("component:composer-actions", {
-      pluginId: PLUGIN_ID,
-
-      toggleReplyAsStaffAliasSelected(options, model) {
-        model.toggleProperty("replyAsStaffAlias");
-        if (model.whisper) {
-          model.set("whisper", false);
-        }
-      },
-
-      toggleWhisperSelected(options, model) {
-        this._super(...arguments);
-        if (model.replyAsStaffAlias) {
-          model.set("replyAsStaffAlias", false);
-        }
-      },
-    });
 
     api.modifyClass(
       "model:composer",
