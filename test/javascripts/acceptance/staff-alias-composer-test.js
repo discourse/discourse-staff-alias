@@ -55,6 +55,7 @@ acceptance("Discourse Staff Alias", function (needs) {
 
   needs.settings({
     enable_whispers: true,
+    enable_new_composer_actions: true,
     staff_alias_enabled: true,
   });
 
@@ -161,10 +162,10 @@ acceptance("Discourse Staff Alias", function (needs) {
     await click("article#post_1 button.edit");
     await composerActions.expand();
 
-    assert.strictEqual(composerActions.rows().length, 2);
+    assert.strictEqual(composerActions.rows().length, 1);
 
     assert.strictEqual(
-      composerActions.rowByIndex(1).value(),
+      composerActions.rowByIndex(0).value(),
       "toggle_reply_as_staff_alias"
     );
   });

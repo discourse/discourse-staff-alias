@@ -8,7 +8,7 @@ function initialize(api) {
 
   if (currentUser?.can_act_as_staff_alias) {
     api.registerValueTransformer("composer-actions-content", ({ value, context }) => {
-      const { action, topic, post, composerModel } = context;
+      const { action, topic, post } = context;
 
       if (action === CREATE_TOPIC) {
         value.unshift({

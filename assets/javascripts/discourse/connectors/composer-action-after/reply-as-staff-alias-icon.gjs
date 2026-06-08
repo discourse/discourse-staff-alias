@@ -1,7 +1,7 @@
 /* eslint-disable ember/no-classic-components */
 import Component from "@ember/component";
 import { classNames, tagName } from "@ember-decorators/component";
-import icon from "discourse/helpers/d-icon";
+import dIcon from "discourse/ui-kit/helpers/d-icon";
 
 @tagName("")
 @classNames("composer-action-after-outlet", "reply-as-staff-alias-icon")
@@ -12,7 +12,7 @@ export default class ReplyAsStaffAliasIcon extends Component {
 
   <template>
     {{#if this.model.isReplyAsStaffAlias}}
-      <span class="reply-as-staff-alias-icon">{{icon "user-secret"}}</span>
+      <span class="reply-as-staff-alias-icon">{{dIcon "user-secret"}}</span>
     {{/if}}
   </template>
 }

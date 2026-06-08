@@ -2,7 +2,7 @@
 import Component from "@ember/component";
 import { LinkTo } from "@ember/routing";
 import { classNames, tagName } from "@ember-decorators/component";
-import icon from "discourse/helpers/d-icon";
+import dIcon from "discourse/ui-kit/helpers/d-icon";
 import { i18n } from "discourse-i18n";
 
 @tagName("")
@@ -24,12 +24,12 @@ export default class AliasedStaffUserDetails extends Component {
               username=this.model.aliased_username
             }}
           >
-            <span>({{icon "user-secret"}}
+            <span>({{dIcon "user-secret"}}
               {{this.model.aliased_username}})</span>
           </LinkTo>
         {{else}}
           <span>
-            ({{icon "user-secret"}}
+            ({{dIcon "user-secret"}}
             {{i18n "discourse_staff_alias.aliased_user_deleted"}})
           </span>
         {{/if}}
