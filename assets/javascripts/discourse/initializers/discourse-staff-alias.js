@@ -7,65 +7,71 @@ function initialize(api) {
   const currentUser = api.getCurrentUser();
 
   if (currentUser?.can_act_as_staff_alias) {
-    api.registerValueTransformer("composer-actions-content", ({ value, context }) => {
-      const { action, topic, post } = context;
+    api.registerValueTransformer(
+      "composer-actions-content",
+      ({ value, context }) => {
+        const { action, topic, post } = context;
 
-      if (action === CREATE_TOPIC) {
-        value.unshift({
-          name: i18n(
-            "composer.composer_actions.as_staff_alias.create_topic.label"
-          ),
-          description: i18n(
-            "composer.composer_actions.as_staff_alias.create_topic.desc"
-          ),
-          icon: "user-secret",
-          id: "toggle_reply_as_staff_alias",
-        });
-      }
-
-      const site = api.container.lookup("service:site");
-
-      if (
-        topic?.details?.staff_alias_can_create_post &&
-        (action === REPLY ||
-          (action === EDIT &&
-            post?.post_type !== site?.post_types?.whisper &&
-            !post?.is_staff_aliased))
-      ) {
-        value.push({
-          name: i18n(
-            `composer.composer_actions.as_staff_alias.${action}.label`
-          ),
-          description: i18n(
-            `composer.composer_actions.as_staff_alias.${action}.desc`
-          ),
-          icon: "user-secret",
-          id: "toggle_reply_as_staff_alias",
-        });
-      }
-
-      return value;
-    });
-
-    api.registerBehaviorTransformer("composer-actions-on-select", ({ context, next }) => {
-      const { actionId, model } = context;
-
-      if (actionId === "toggle_reply_as_staff_alias") {
-        model.toggleProperty("replyAsStaffAlias");
-        if (model.whisper) {
-          model.set("whisper", false);
+        if (action === CREATE_TOPIC) {
+          value.unshift({
+            name: i18n(
+              "composer.composer_actions.as_staff_alias.create_topic.label"
+            ),
+            description: i18n(
+              "composer.composer_actions.as_staff_alias.create_topic.desc"
+            ),
+            icon: "user-secret",
+            id: "toggle_reply_as_staff_alias",
+          });
         }
-        return;
-      }
 
-      if (actionId === "toggle_whisper") {
-        if (model.replyAsStaffAlias) {
-          model.set("replyAsStaffAlias", false);
+        const site = api.container.lookup("service:site");
+
+        if (
+          topic?.details?.staff_alias_can_create_post &&
+          (action === REPLY ||
+            (action === EDIT &&
+              post?.post_type !== site?.post_types?.whisper &&
+              !post?.is_staff_aliased))
+        ) {
+          value.push({
+            name: i18n(
+              `composer.composer_actions.as_staff_alias.${action}.label`
+            ),
+            description: i18n(
+              `composer.composer_actions.as_staff_alias.${action}.desc`
+            ),
+            icon: "user-secret",
+            id: "toggle_reply_as_staff_alias",
+          });
         }
-      }
 
-      next();
-    });
+        return value;
+      }
+    );
+
+    api.registerBehaviorTransformer(
+      "composer-actions-on-select",
+      ({ context, next }) => {
+        const { actionId, model } = context;
+
+        if (actionId === "toggle_reply_as_staff_alias") {
+          model.toggleProperty("replyAsStaffAlias");
+          if (model.whisper) {
+            model.set("whisper", false);
+          }
+          return;
+        }
+
+        if (actionId === "toggle_whisper") {
+          if (model.replyAsStaffAlias) {
+            model.set("replyAsStaffAlias", false);
+          }
+        }
+
+        next();
+      }
+    );
 
     api.modifyClass(
       "component:composer-actions",
