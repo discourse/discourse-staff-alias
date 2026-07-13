@@ -1,4 +1,3 @@
-import { tracked } from "@glimmer/tracking";
 import { withPluginApi } from "discourse/lib/plugin-api";
 import { CREATE_TOPIC, EDIT, REPLY } from "discourse/models/composer";
 import { i18n } from "discourse-i18n";
@@ -148,33 +147,23 @@ function initialize(api) {
         }
     );
 
-    api.modifyClass(
-      "model:composer",
-      (Superclass) =>
-        class extends Superclass {
-          @tracked replyAsStaffAlias = false;
-          @tracked _originalUser;
+    api.addModelField("composer", "replyAsStaffAlias", { defaultValue: false });
 
-          get user() {
-            if (this.isReplyAsStaffAlias && this.topic) {
-              return this.get("topic.staff_alias_user");
-            } else {
-              return this._originalUser;
-            }
-          }
+    api.addModelGetter("composer", "isReplyAsStaffAlias", function () {
+      if (this.editingPost && this.post?.is_staff_aliased) {
+        return true;
+      }
+      return !this.whisper && this.replyAsStaffAlias;
+    });
 
-          set user(value) {
-            this._originalUser = value;
-          }
-
-          get isReplyAsStaffAlias() {
-            if (this.get("editingPost") && this.get("post.is_staff_aliased")) {
-              return true;
-            } else {
-              return !this.get("whisper") && this.get("replyAsStaffAlias");
-            }
-          }
+    api.registerValueTransformer(
+      "composer-user",
+      ({ value, context: { composer } }) => {
+        if (composer.isReplyAsStaffAlias && composer.topic) {
+          return composer.topic.staff_alias_user;
         }
+        return value;
+      }
     );
 
     api.serializeOnCreate("as_staff_alias", "isReplyAsStaffAlias");
