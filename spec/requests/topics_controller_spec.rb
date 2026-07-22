@@ -54,6 +54,25 @@ describe PostsController do
       expect(DiscourseStaffAlias::UsersPostRevisionsLink.count).to eq(0)
     end
 
+    it "does not allow a staff user to update topic as alias user when staff alias is disabled" do
+      sign_in(moderator)
+      SiteSetting.set(:staff_alias_enabled, false)
+      original_title = topic.title
+
+      expect do
+        put "/t/#{topic.slug}/#{topic.id}.json",
+            params: {
+              title: "brand new title",
+              as_staff_alias: true,
+            }
+
+        expect(response.status).to eq(403)
+        expect(response.parsed_body["error_type"]).to eq("invalid_access")
+      end.not_to change { post_1.post_revisions.count }
+
+      expect(topic.reload.title).to eq(original_title)
+    end
+
     it "should revise topic title as staff alias user for a topic created by staff alias user" do
       sign_in(user)
       SiteSetting.set(:staff_alias_allowed_groups, "#{Group::AUTO_GROUPS[:staff]}|#{group.id}")
