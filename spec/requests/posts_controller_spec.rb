@@ -93,6 +93,25 @@ describe PostsController do
                   }.from(false).to(true)
     end
 
+    it "does not allow a staff user to post as alias user when staff alias is disabled" do
+      sign_in(moderator)
+      SiteSetting.set(:staff_alias_enabled, false)
+      alias_user = DiscourseStaffAlias.alias_user
+
+      expect do
+        post "/posts.json",
+             params: {
+               raw: "this is a post",
+               topic_id: post_1.topic_id,
+               reply_to_post_number: 1,
+               as_staff_alias: true,
+             }
+
+        expect(response.status).to eq(403)
+        expect(response.parsed_body["error_type"]).to eq("invalid_access")
+      end.not_to change { alias_user.posts.count }
+    end
+
     it "allows a staff user to post as alias user" do
       sign_in(moderator)
       alias_user = DiscourseStaffAlias.alias_user
@@ -196,6 +215,25 @@ describe PostsController do
             }.by(-1).and change { DraftSequence.current(moderator, post_1.topic.draft_key) }.from(
                     1,
                   ).to(2)
+    end
+
+    it "does not allow a staff user to edit as alias user when staff alias is disabled" do
+      sign_in(moderator)
+      SiteSetting.set(:staff_alias_enabled, false)
+
+      expect do
+        put "/posts/#{post_1.id}.json",
+            params: {
+              post: {
+                raw: "new raw body",
+                edit_reason: "typo",
+                as_staff_alias: true,
+              },
+            }
+
+        expect(response.status).to eq(403)
+        expect(response.parsed_body["error_type"]).to eq("invalid_access")
+      end.not_to change { post_1.revisions.count }
     end
 
     it "allows staff user to edit normal posts as alias user" do

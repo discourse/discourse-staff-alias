@@ -21,7 +21,7 @@ module DiscourseStaffAlias
   end
 
   def self.user_allowed?(user)
-    return false if user.blank?
+    return false if !enabled? || user.blank?
     user.can_post_as_staff_alias
   end
 
