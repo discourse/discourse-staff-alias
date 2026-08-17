@@ -2,7 +2,6 @@ import { click, fillIn, visit } from "@ember/test-helpers";
 import { skip, test } from "qunit";
 import { cloneJSON } from "discourse/lib/object";
 import User from "discourse/models/user";
-import { _clearSnapshots } from "discourse/select-kit/components/composer-actions";
 import topicFixtures from "discourse/tests/fixtures/topic";
 import { presentUserIds } from "discourse/tests/helpers/presence-pretender";
 import { acceptance } from "discourse/tests/helpers/qunit-helpers";
@@ -55,12 +54,7 @@ acceptance("Discourse Staff Alias", function (needs) {
 
   needs.settings({
     enable_whispers: true,
-    enable_new_composer_actions: true,
     staff_alias_enabled: true,
-  });
-
-  needs.hooks.beforeEach(() => {
-    _clearSnapshots();
   });
 
   needs.hooks.afterEach(() => {
