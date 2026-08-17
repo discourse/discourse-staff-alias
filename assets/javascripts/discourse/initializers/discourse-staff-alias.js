@@ -73,65 +73,6 @@ function initialize(api) {
     );
 
     api.modifyClass(
-      "component:composer-actions",
-      (Superclass) =>
-        class extends Superclass {
-          toggleReplyAsStaffAliasSelected(options, model) {
-            model.toggleProperty("replyAsStaffAlias");
-            if (model.whisper) {
-              model.set("whisper", false);
-            }
-          }
-
-          toggleWhisperSelected(options, model) {
-            if (model.replyAsStaffAlias) {
-              model.set("replyAsStaffAlias", false);
-            }
-            super.toggleWhisperSelected(options, model);
-          }
-        }
-    );
-
-    api.modifySelectKit("composer-actions").appendContent((options) => {
-      const items = [];
-      const site = api.container.lookup("service:site");
-
-      if (options.action === CREATE_TOPIC) {
-        items.push({
-          name: i18n(
-            "composer.composer_actions.as_staff_alias.create_topic.label"
-          ),
-          description: i18n(
-            "composer.composer_actions.as_staff_alias.create_topic.desc"
-          ),
-          icon: "user-secret",
-          id: "toggle_reply_as_staff_alias",
-        });
-      }
-
-      if (
-        options.topic?.details?.staff_alias_can_create_post &&
-        (options.action === REPLY ||
-          (options.action === EDIT &&
-            options.post?.post_type !== site?.post_types?.whisper &&
-            !options.post?.is_staff_aliased))
-      ) {
-        items.push({
-          name: i18n(
-            `composer.composer_actions.as_staff_alias.${options.action}.label`
-          ),
-          description: i18n(
-            `composer.composer_actions.as_staff_alias.${options.action}.desc`
-          ),
-          icon: "user-secret",
-          id: "toggle_reply_as_staff_alias",
-        });
-      }
-
-      return items;
-    });
-
-    api.modifyClass(
       "component:composer-presence-display",
       (ComposerPresenceDisplayComponent) =>
         class extends ComposerPresenceDisplayComponent {
