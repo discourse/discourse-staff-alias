@@ -22,7 +22,7 @@ describe PostRevision do
   end
 
   it "does not allow users that are not in staff alias allowed group to edit posts made by staff alias user" do
-    SiteSetting.set(:staff_alias_allowed_groups, "somegroupname")
+    SiteSetting.set(:staff_alias_allowed_groups, Fabricate(:group).id.to_s)
 
     post = Fabricate(:post, user: DiscourseStaffAlias.alias_user)
     post_revision = Fabricate.build(:post_revision, post: post, user: admin)
