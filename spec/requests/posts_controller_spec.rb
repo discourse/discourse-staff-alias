@@ -163,6 +163,7 @@ describe PostsController do
     end
 
     it "does not allow a whisper to be edited as an alias user" do
+      SiteSetting.whispers_allowed_groups = Group::AUTO_GROUPS[:staff].to_s
       sign_in(moderator)
       alias_user = DiscourseStaffAlias.alias_user
       post_1.update!(post_type: Post.types[:whisper])
