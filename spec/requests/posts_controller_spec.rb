@@ -310,6 +310,85 @@ describe PostsController do
     end
   end
 
+  describe "#revisions" do
+    it "hides transfers to the staff alias from public revision history" do
+      SiteSetting.edit_history_visible_to_public = true
+      SiteSetting.moderators_change_post_ownership = true
+      SiteSetting.staff_alias_allowed_groups = Group::AUTO_GROUPS[:staff].to_s
+      alias_user = DiscourseStaffAlias.alias_user
+
+      sign_in(moderator)
+      post "/t/#{post_1.topic_id}/change-owner.json",
+           params: {
+             topic_id: post_1.topic_id,
+             username: alias_user.username,
+             post_ids: [post_1.id],
+           }
+
+      expect(response.status).to eq(200)
+
+      ownership_revision = post_1.reload.revisions.last
+
+      sign_in(user)
+      get "/posts/#{post_1.id}/revisions/#{ownership_revision.number}.json"
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body).not_to have_key("user_changes")
+
+      get "/posts/#{post_1.id}/revisions/latest.json"
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body).not_to have_key("user_changes")
+
+      sign_in(moderator)
+      get "/posts/#{post_1.id}/revisions/#{ownership_revision.number}.json"
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body.dig("user_changes", "previous", "username")).to eq(
+        moderator.username_lower,
+      )
+    end
+
+    it "shows transfers from the staff alias in public revision history" do
+      SiteSetting.edit_history_visible_to_public = true
+      SiteSetting.moderators_change_post_ownership = true
+      SiteSetting.staff_alias_allowed_groups = Group::AUTO_GROUPS[:staff].to_s
+      alias_user = DiscourseStaffAlias.alias_user
+
+      sign_in(moderator)
+      post "/t/#{post_1.topic_id}/change-owner.json",
+           params: {
+             topic_id: post_1.topic_id,
+             username: alias_user.username,
+             post_ids: [post_1.id],
+           }
+
+      expect(response.status).to eq(200)
+
+      post "/t/#{post_1.topic_id}/change-owner.json",
+           params: {
+             topic_id: post_1.topic_id,
+             username: moderator.username,
+             post_ids: [post_1.id],
+           }
+
+      expect(response.status).to eq(200)
+
+      ownership_revision = post_1.reload.revisions.last
+
+      sign_in(user)
+      get "/posts/#{post_1.id}/revisions/#{ownership_revision.number}.json"
+
+      expect(response.status).to eq(200)
+      expect(response.parsed_body.dig("user_changes", "previous", "username")).to eq(
+        alias_user.username_lower,
+      )
+      expect(response.parsed_body.dig("user_changes", "current", "username")).to eq(
+        moderator.username_lower,
+      )
+    end
+  end
+
   describe "#wiki" do
     it "allows users in staff aliased allowed group to update wiki status of post made by staff alias user" do
       sign_in(moderator)
