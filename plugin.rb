@@ -16,6 +16,7 @@ require_relative "lib/discourse_staff_alias/with_current_user"
 require_relative "lib/discourse_staff_alias/user_extension"
 require_relative "lib/discourse_staff_alias/post_extension"
 require_relative "lib/discourse_staff_alias/post_revision_extension"
+require_relative "lib/discourse_staff_alias/post_revision_serializer_extension"
 require_relative "lib/discourse_staff_alias/topics_controller_extension"
 require_relative "lib/discourse_staff_alias/posts_controller_extension"
 
@@ -53,6 +54,7 @@ after_initialize do
     User.prepend(DiscourseStaffAlias::UserExtension)
     Post.prepend(DiscourseStaffAlias::PostExtension)
     PostRevision.prepend(DiscourseStaffAlias::PostRevisionExtension)
+    PostRevisionSerializer.prepend(DiscourseStaffAlias::PostRevisionSerializerExtension)
     TopicsController.prepend(DiscourseStaffAlias::TopicsControllerExtension)
     PostsController.prepend(DiscourseStaffAlias::PostsControllerExtension)
   end
